@@ -71,8 +71,11 @@ public class SoftKeyboard extends InputMethodService
     private CompletionInfo[] mCompletions;
     
     private StringBuilder mComposing = new StringBuilder();
-    private boolean mPredictionOn;
-    private boolean mCompletionOn;
+
+    final private boolean mPredictionOn= false;  //todo:prediction permanently disabled.. i hope!
+    final private boolean mCompletionOn= false;  //todo:completion permanently disabled.. i hope!;
+
+
     private int mLastDisplayWidth;
     private boolean mCapsLock;
     private long mLastShiftTime;
@@ -117,7 +120,7 @@ public class SoftKeyboard extends InputMethodService
             if (displayWidth == mLastDisplayWidth) return;
             mLastDisplayWidth = displayWidth;
         }
-        mQwertyKeyboard = new LatinKeyboard(this, R.xml.qwerty);
+        mQwertyKeyboard = new LatinKeyboard(this, R.xml.cdda_keyboard_base);
         mSymbolsKeyboard = new LatinKeyboard(this, R.xml.symbols);
         mSymbolsShiftedKeyboard = new LatinKeyboard(this, R.xml.symbols_shift);
     }
@@ -173,8 +176,8 @@ public class SoftKeyboard extends InputMethodService
             mMetaState = 0;
         }
         
-        mPredictionOn = false;
-        mCompletionOn = false;
+//        mPredictionOn = false;
+//        mCompletionOn = false;
         mCompletions = null;
         
         // We are now going to initialize our state based on the type of
@@ -199,7 +202,7 @@ public class SoftKeyboard extends InputMethodService
                 // be doing predictive text (showing candidates as the
                 // user types).
                 mCurKeyboard = mQwertyKeyboard;
-                mPredictionOn = true;
+//                mPredictionOn = true;
                 
                 // We now look for a few special variations of text that will
                 // modify our behavior.
@@ -208,7 +211,7 @@ public class SoftKeyboard extends InputMethodService
                         variation == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
                     // Do not display predictions / what the user is typing
                     // when they are entering a password.
-                    mPredictionOn = false;
+//                    mPredictionOn = false;
                 }
                 
                 if (variation == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
@@ -216,7 +219,7 @@ public class SoftKeyboard extends InputMethodService
                         || variation == InputType.TYPE_TEXT_VARIATION_FILTER) {
                     // Our predictions are not useful for e-mail addresses
                     // or URIs.
-                    mPredictionOn = false;
+ //                   mPredictionOn = false;
                 }
                 
                 if ((attribute.inputType & InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE) != 0) {
@@ -225,8 +228,8 @@ public class SoftKeyboard extends InputMethodService
                     // to supply their own.  We only show the editor's
                     // candidates when in fullscreen mode, otherwise relying
                     // own it displaying its own UI.
-                    mPredictionOn = false;
-                    mCompletionOn = isFullscreenMode();
+ //                   mPredictionOn = false;
+ //                   mCompletionOn = isFullscreenMode();
                 }
                 
                 // We also want to look at the current state of the editor
@@ -523,6 +526,14 @@ public class SoftKeyboard extends InputMethodService
 
     // Implementation of KeyboardViewListener
 
+    /**
+     * todo: understanding...
+     * seems to handle charcters being pressed
+     * - does actions for special keys
+     * -
+     * @param primaryCode
+     * @param keyCodes
+     */
     public void onKey(int primaryCode, int[] keyCodes) {
         Log.d("Test","KEYCODE: " + primaryCode);
         if (isWordSeparator(primaryCode)) {
@@ -740,6 +751,7 @@ public class SoftKeyboard extends InputMethodService
     }
 
     public void onPress(int primaryCode) {
+
 
     }
 
