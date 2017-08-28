@@ -30,7 +30,7 @@
     <string name="label_send_key">Send</string>
 
     <!-- Labels for subtype -->
-    <string name="label_subtype_generic">%s</string>
+    <string name="label_subtype_generic">Cdda</string>
     <string name="label_subtype_en_GB">English (GB)</string>
 
     <!-- Titles for ImePreference -->

@@ -66,7 +66,7 @@ public class SoftKeyboard extends InputMethodService
 
     private InputMethodManager mInputMethodManager;
 
-    private LatinKeyboardView mInputView;
+    private LatinKeyboardView mKeyboardView;
     private CandidateView mCandidateView;
     private CompletionInfo[] mCompletions;
     
@@ -132,19 +132,22 @@ public class SoftKeyboard extends InputMethodService
      * a configuration change.
      */
     @Override public View onCreateInputView() {
-        mInputView = (LatinKeyboardView) getLayoutInflater().inflate(
-                R.layout.input, null);
-        mInputView.setOnKeyboardActionListener(this);
-        mInputView.setPreviewEnabled(false);
+        mKeyboardView = (LatinKeyboardViewCdda) getLayoutInflater().inflate(R.layout.input, null);
+
+        /**
+         * todo:
+         */
+        //mKeyboardView.setOnKeyboardActionListener(this);        //todo: this overrides my listener in LatinKeyboardViewCdda
+        mKeyboardView.setPreviewEnabled(false);
         setLatinKeyboard(mQwertyKeyboard);
-        return mInputView;
+        return mKeyboardView;
     }
 
     private void setLatinKeyboard(LatinKeyboard nextKeyboard) {
         final boolean shouldSupportLanguageSwitchKey =
                 mInputMethodManager.shouldOfferSwitchingToNextInputMethod(getToken());
         nextKeyboard.setLanguageSwitchKeyVisibility(shouldSupportLanguageSwitchKey);
-        mInputView.setKeyboard(nextKeyboard);
+        mKeyboardView.setKeyboard(nextKeyboard);
     }
 
     /**
@@ -268,8 +271,8 @@ public class SoftKeyboard extends InputMethodService
         setCandidatesViewShown(false);
         
         mCurKeyboard = mQwertyKeyboard;
-        if (mInputView != null) {
-            mInputView.closing();
+        if (mKeyboardView != null) {
+            mKeyboardView.closing();
         }
     }
     
@@ -277,14 +280,14 @@ public class SoftKeyboard extends InputMethodService
         super.onStartInputView(attribute, restarting);
         // Apply the selected keyboard to the input view.
         setLatinKeyboard(mCurKeyboard);
-        mInputView.closing();
+        mKeyboardView.closing();
         final InputMethodSubtype subtype = mInputMethodManager.getCurrentInputMethodSubtype();
-        mInputView.setSubtypeOnSpaceKey(subtype);
+        mKeyboardView.setSubtypeOnSpaceKey(subtype);
     }
 
     @Override
     public void onCurrentInputMethodSubtypeChanged(InputMethodSubtype subtype) {
-        mInputView.setSubtypeOnSpaceKey(subtype);
+        mKeyboardView.setSubtypeOnSpaceKey(subtype);
     }
 
     /**
@@ -382,8 +385,8 @@ public class SoftKeyboard extends InputMethodService
                 // key for us, to dismiss the input method if it is shown.
                 // However, our keyboard could be showing a pop-up window
                 // that back should dismiss, so we first allow it to do that.
-                if (event.getRepeatCount() == 0 && mInputView != null) {
-                    if (mInputView.handleBack()) {
+                if (event.getRepeatCount() == 0 && mKeyboardView != null) {
+                    if (mKeyboardView.handleBack()) {
                         return true;
                     }
                 }
@@ -475,13 +478,13 @@ public class SoftKeyboard extends InputMethodService
      */
     private void updateShiftKeyState(EditorInfo attr) {
         if (attr != null 
-                && mInputView != null && mQwertyKeyboard == mInputView.getKeyboard()) {
+                && mKeyboardView != null && mQwertyKeyboard == mKeyboardView.getKeyboard()) {
             int caps = 0;
             EditorInfo ei = getCurrentInputEditorInfo();
             if (ei != null && ei.inputType != InputType.TYPE_NULL) {
                 caps = getCurrentInputConnection().getCursorCapsMode(attr.inputType);
             }
-            mInputView.setShifted(mCapsLock || caps != 0);
+            mKeyboardView.setShifted(mCapsLock || caps != 0);
         }
     }
     
@@ -527,7 +530,7 @@ public class SoftKeyboard extends InputMethodService
     // Implementation of KeyboardViewListener
 
     /**
-     * todo: understanding...
+     * todo: onKey understanding...
      * seems to handle charcters being pressed
      * - does actions for special keys
      * -
@@ -556,8 +559,8 @@ public class SoftKeyboard extends InputMethodService
         } else if (primaryCode == LatinKeyboardView.KEYCODE_OPTIONS) {
             // Show a menu or somethin'
         } else if (primaryCode == Keyboard.KEYCODE_MODE_CHANGE
-                && mInputView != null) {
-            Keyboard current = mInputView.getKeyboard();
+                && mKeyboardView != null) {
+            Keyboard current = mKeyboardView.getKeyboard();
             if (current == mSymbolsKeyboard || current == mSymbolsShiftedKeyboard) {
                 setLatinKeyboard(mQwertyKeyboard);
             } else {
@@ -630,15 +633,15 @@ public class SoftKeyboard extends InputMethodService
     }
 
     private void handleShift() {
-        if (mInputView == null) {
+        if (mKeyboardView == null) {
             return;
         }
         
-        Keyboard currentKeyboard = mInputView.getKeyboard();
+        Keyboard currentKeyboard = mKeyboardView.getKeyboard();
         if (mQwertyKeyboard == currentKeyboard) {
             // Alphabet keyboard
             checkToggleCapsLock();
-            mInputView.setShifted(mCapsLock || !mInputView.isShifted());
+            mKeyboardView.setShifted(mCapsLock || !mKeyboardView.isShifted());
         } else if (currentKeyboard == mSymbolsKeyboard) {
             mSymbolsKeyboard.setShifted(true);
             setLatinKeyboard(mSymbolsShiftedKeyboard);
@@ -652,7 +655,7 @@ public class SoftKeyboard extends InputMethodService
     
     private void handleCharacter(int primaryCode, int[] keyCodes) {
         if (isInputViewShown()) {
-            if (mInputView.isShifted()) {
+            if (mKeyboardView.isShifted()) {
                 primaryCode = Character.toUpperCase(primaryCode);
             }
         }
@@ -670,7 +673,7 @@ public class SoftKeyboard extends InputMethodService
     private void handleClose() {
         commitTyped(getCurrentInputConnection());
         requestHideSelf(0);
-        mInputView.closing();
+        mKeyboardView.closing();
     }
 
     private IBinder getToken() {
@@ -750,7 +753,16 @@ public class SoftKeyboard extends InputMethodService
     public void swipeUp() {
     }
 
+    /**
+     * was empty before
+     * @param primaryCode
+     */
     public void onPress(int primaryCode) {
+/**
+ * todo: Call onLongPress() code here... but from which class??? ><
+ *      mKeyboardView.onLongPress()                :D
+ *      //mKeyboardView.onLongPress(null);
+ */
 
 
     }
