@@ -5,3 +5,10 @@
     android:verticalGap="0px"
     android:keyHeight="56dp">
 </Keyboard>
+
+<!--
+todo: If I can use cdda_keyboard_expanded as the popup i only need to worry about centering
+    the view on the screen for each letter... and having it draw outside the screen!
+    - can be done with setPopupOffset()
+    - PopupWindow mPopupKeyboard.setClippingEnabled(true);
+-->

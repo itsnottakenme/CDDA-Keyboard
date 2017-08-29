@@ -63,31 +63,36 @@ public class LatinKeyboardView extends KeyboardView {
         invalidateAllKeys();
     }
 
-    @Override
-    public void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-        Paint paint = new Paint();
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTextSize(28);
-        paint.setColor(Color.LTGRAY);
-
-        List<Key> keys = getKeyboard().getKeys();
-        for(Key key: keys) {
-            if(key.label != null) {
-                if (key.label.equals("q")) {
-                    canvas.drawText("1", key.x + (key.width - 25), key.y + 40, paint);
-                } else if (key.label.equals("w")) {
-                    canvas.drawText("2", key.x + (key.width - 25), key.y + 40, paint);
-                } else if (key.label.equals("e")) {
-                    canvas.drawText("3", key.x + (key.width - 25), key.y + 40, paint);
-                } else if (key.label.equals("r")) {
-                    canvas.drawText("4", key.x + (key.width - 25), key.y + 40, paint);
-                } else if (key.label.equals("t")) {
-                    canvas.drawText("5", key.x + (key.width - 25), key.y + 40, paint);
-                }
-            }
-
-        }
-    }
+    /**
+     * This adds numbers and stuff to keys
+     */
+//
+//    @Override
+//    public void onDraw(Canvas canvas) {
+//        super.onDraw(canvas);
+//
+//        Paint paint = new Paint();
+//        paint.setTextAlign(Paint.Align.CENTER);
+//        paint.setTextSize(28);
+//        paint.setColor(Color.LTGRAY);
+//
+//        List<Key> keys = getKeyboard().getKeys();
+//        for(Key key: keys) {
+//            if(key.label != null) {
+//                if (key.label.equals("q")) {
+//                    canvas.drawText("1", key.x + (key.width - 25), key.y + 40, paint);
+//                } else if (key.label.equals("w")) {
+//                    canvas.drawText("2", key.x + (key.width - 25), key.y + 40, paint);
+//                } else if (key.label.equals("e")) {
+//                    canvas.drawText("3", key.x + (key.width - 25), key.y + 40, paint);
+//                } else if (key.label.equals("r")) {
+//                    canvas.drawText("4", key.x + (key.width - 25), key.y + 40, paint);
+//                } else if (key.label.equals("t")) {
+//                    canvas.drawText("5", key.x + (key.width - 25), key.y + 40, paint);
+//                }
+//            }
+//
+//        }
+//        return;
+//    }
 }

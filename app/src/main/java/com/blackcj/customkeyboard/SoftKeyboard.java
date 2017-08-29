@@ -500,7 +500,11 @@ public class SoftKeyboard extends InputMethodService
     }
     
     /**
-     * Helper to send a key down / key up pair to the current editor.
+     * Helper to send a key down / key up pair to the current editor
+     *
+     *
+     * todo: what effect does sending both ACTION_DOWN and ACTION_UP have?
+     * these events are being sent the C:DDA process so no effect on my side I believe
      */
     private void keyDownUp(int keyEventCode) {
         getCurrentInputConnection().sendKeyEvent(
@@ -759,9 +763,8 @@ public class SoftKeyboard extends InputMethodService
      */
     public void onPress(int primaryCode) {
 /**
- * todo: Call onLongPress() code here... but from which class??? ><
- *      mKeyboardView.onLongPress()                :D
- *      //mKeyboardView.onLongPress(null);
+ * todo: Put onLongPress() code here (move from LatinKeyboardViewCdda
+ *
  */
 
 
