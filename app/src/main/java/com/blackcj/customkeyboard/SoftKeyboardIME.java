@@ -44,22 +44,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Example of writing an input method for a soft keyboard.  This code is
+ * Example of writing an keyboardview_base method for a soft keyboard.  This code is
  * focused on simplicity over completeness, so it should in no way be considered
  * to be a complete soft keyboard implementation.  Its purpose is to provide
- * a basic example for how you would get started writing an input method, to
+ * a basic example for how you would get started writing an keyboardview_base method, to
  * be fleshed out as appropriate.
  */
-public class SoftKeyboard extends InputMethodService 
+public class SoftKeyboardIME extends InputMethodService
         implements KeyboardView.OnKeyboardActionListener, SpellCheckerSession.SpellCheckerSessionListener {
     static final boolean DEBUG = false;
     
     /**
      * This boolean indicates the optional example code for performing
      * processing of hard keys in addition to regular text generation
-     * from on-screen interaction.  It would be used for input methods that
+     * from on-screen interaction.  It would be used for keyboardview_base methods that
      * perform language translations (such as converting text entered on 
-     * a QWERTY keyboard to Chinese), but may not be used for input methods
+     * a QWERTY keyboard to Chinese), but may not be used for keyboardview_base methods
      * that are primarily intended to be used for on-screen text entry.
      */
     static final boolean PROCESS_HARD_KEYS = true;
@@ -95,7 +95,7 @@ public class SoftKeyboard extends InputMethodService
 
 
     /**
-     * Main initialization of the input method component.  Be sure to call
+     * Main initialization of the keyboardview_base method component.  Be sure to call
      * to super class.
      */
     @Override public void onCreate() {
@@ -126,19 +126,19 @@ public class SoftKeyboard extends InputMethodService
     }
     
     /**
-     * Called by the framework when your view for creating input needs to
-     * be generated.  This will be called the first time your input method
+     * Called by the framework when your view for creating keyboardview_base needs to
+     * be generated.  This will be called the first time your keyboardview_base method
      * is displayed, and every time it needs to be re-created such as due to
      * a configuration change.
      */
     @Override public View onCreateInputView() {
-        mKeyboardView = (LatinKeyboardViewCdda) getLayoutInflater().inflate(R.layout.input, null);
+        mKeyboardView = (LatinKeyboardViewCdda) getLayoutInflater().inflate(R.layout.keyboardview_base, null);
 
         /**
          * todo:
          */
-        //mKeyboardView.setOnKeyboardActionListener(this);        //todo: this overrides my listener in LatinKeyboardViewCdda
-        mKeyboardView.setPreviewEnabled(false);
+        mKeyboardView.setOnKeyboardActionListener(this);        //todo: this overrides my listener in LatinKeyboardViewCdda
+        mKeyboardView.setPreviewEnabled(true); //todo: turn on preview?
         setLatinKeyboard(mQwertyKeyboard);
         return mKeyboardView;
     }
@@ -161,7 +161,7 @@ public class SoftKeyboard extends InputMethodService
     }
 
     /**
-     * This is the main point where we do our initialization of the input method
+     * This is the main point where we do our initialization of the keyboardview_base method
      * to begin operating on an application.  At this point we have been
      * bound to the client, and are now receiving all of the detailed information
      * about the target of our edits.
@@ -242,7 +242,7 @@ public class SoftKeyboard extends InputMethodService
                 break;
                 
             default:
-                // For all unknown input types, default to the alphabetic
+                // For all unknown keyboardview_base types, default to the alphabetic
                 // keyboard with no special features.
                 mCurKeyboard = mQwertyKeyboard;
                 updateShiftKeyState(attribute);
@@ -264,7 +264,7 @@ public class SoftKeyboard extends InputMethodService
         mComposing.setLength(0);
         updateCandidates();
         
-        // We only hide the candidates window when finishing input on
+        // We only hide the candidates window when finishing keyboardview_base on
         // a particular editor, to avoid popping the underlying application
         // up and down if the user is entering text into the bottom of
         // its window.
@@ -278,7 +278,7 @@ public class SoftKeyboard extends InputMethodService
     
     @Override public void onStartInputView(EditorInfo attribute, boolean restarting) {
         super.onStartInputView(attribute, restarting);
-        // Apply the selected keyboard to the input view.
+        // Apply the selected keyboard to the keyboardview_base view.
         setLatinKeyboard(mCurKeyboard);
         mKeyboardView.closing();
         final InputMethodSubtype subtype = mInputMethodManager.getCurrentInputMethodSubtype();
@@ -382,7 +382,7 @@ public class SoftKeyboard extends InputMethodService
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
                 // The InputMethodService already takes care of the back
-                // key for us, to dismiss the input method if it is shown.
+                // key for us, to dismiss the keyboardview_base method if it is shown.
                 // However, our keyboard could be showing a pop-up window
                 // that back should dismiss, so we first allow it to do that.
                 if (event.getRepeatCount() == 0 && mKeyboardView != null) {
@@ -414,7 +414,7 @@ public class SoftKeyboard extends InputMethodService
                 if (PROCESS_HARD_KEYS) {
                     if (keyCode == KeyEvent.KEYCODE_SPACE
                             && (event.getMetaState()&KeyEvent.META_ALT_ON) != 0) {
-                        // A silly example: in our input method, Alt+Space
+                        // A silly example: in our keyboardview_base method, Alt+Space
                         // is a shortcut for 'android' in lower case.
                         InputConnection ic = getCurrentInputConnection();
                         if (ic != null) {
@@ -598,7 +598,7 @@ public class SoftKeyboard extends InputMethodService
             if (mComposing.length() > 0) {
                 ArrayList<String> list = new ArrayList<String>();
                 //list.add(mComposing.toString());
-                Log.d("SoftKeyboard", "REQUESTING: " + mComposing.toString());
+                Log.d("SoftKeyboardIME", "REQUESTING: " + mComposing.toString());
                 mScs.getSentenceSuggestions(new TextInfo[] {new TextInfo(mComposing.toString())}, 5);
                 setSuggestions(list, true, true);
             } else {
@@ -739,14 +739,14 @@ public class SoftKeyboard extends InputMethodService
     }
     
     public void swipeRight() {
-        Log.d("SoftKeyboard", "Swipe right");
+        Log.d("SoftKeyboardIME", "Swipe right");
         if (mCompletionOn || mPredictionOn) {
             pickDefaultCandidate();
         }
     }
     
     public void swipeLeft() {
-        Log.d("SoftKeyboard", "Swipe left");
+        Log.d("SoftKeyboardIME", "Swipe left");
         handleBackspace();
     }
 
@@ -792,7 +792,7 @@ public class SoftKeyboard extends InputMethodService
 
             sb.append(" (" + len + ")");
         }
-        Log.d("SoftKeyboard", "SUGGESTIONS: " + sb.toString());
+        Log.d("SoftKeyboardIME", "SUGGESTIONS: " + sb.toString());
     }
     private static final int NOT_A_LENGTH = -1;
 
@@ -807,7 +807,7 @@ public class SoftKeyboard extends InputMethodService
 
     @Override
     public void onGetSentenceSuggestions(SentenceSuggestionsInfo[] results) {
-        Log.d("SoftKeyboard", "onGetSentenceSuggestions");
+        Log.d("SoftKeyboardIME", "onGetSentenceSuggestions");
         final List<String> sb = new ArrayList<>();
         for (int i = 0; i < results.length; ++i) {
             final SentenceSuggestionsInfo ssi = results[i];
@@ -816,7 +816,7 @@ public class SoftKeyboard extends InputMethodService
                         sb, ssi.getSuggestionsInfoAt(j), ssi.getOffsetAt(j), ssi.getLengthAt(j));
             }
         }
-        Log.d("SoftKeyboard", "SUGGESTIONS: " + sb.toString());
+        Log.d("SoftKeyboardIME", "SUGGESTIONS: " + sb.toString());
         setSuggestions(sb, true, true);
     }
 }

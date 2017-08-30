@@ -23,7 +23,7 @@ import android.preference.PreferenceActivity;
 import com.android.inputmethodcommon.InputMethodSettingsFragment;
 
 /**
- * Displays the IME preferences inside the input method setting.
+ * Displays the IME preferences inside the keyboardview_base method setting.
  */
 public class ImePreferences extends PreferenceActivity {
     @Override

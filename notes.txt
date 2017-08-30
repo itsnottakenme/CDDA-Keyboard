@@ -1,0 +1,5 @@
+
+
+KeyboardView
+-getX() and getY() return (x,y) values in KeyBoardView. (0,0) is top left hand corner of view. Upwards is negative
+-getRawX(), getRawY() return coordinates of screen top left corner: (0,0), bottom right corner (1280, 768)

@@ -9,7 +9,7 @@ package com.blackcj.customkeyboard;
  * with OnKeyboardActionListener()
  */
 
-public class SoftKeyboardCdda_DEPRECATED extends SoftKeyboard
+public class SoftKeyboardIMECdda_DEPRECATED extends SoftKeyboardIME
 {
 
     @Override

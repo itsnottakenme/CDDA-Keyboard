@@ -11,6 +11,6 @@
     android:keyBackground="@drawable/key_background"
     android:keyTextColor="#fff"
     android:background="@color/colorPrimaryDark"
-    android:popupLayout="@layout/keyboard_popup_layout" >
+    android:popupLayout="@layout/keyboardview_popup" >
 
 </com.blackcj.customkeyboard.LatinKeyboardViewCdda>
