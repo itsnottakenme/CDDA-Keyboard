@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.blackcj.customkeyboard;
+package com.blackcj.customkeyboard.views;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -25,6 +25,9 @@ import android.graphics.drawable.Drawable;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.blackcj.customkeyboard.R;
+import com.blackcj.customkeyboard.SoftKeyboardIME;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +136,7 @@ public class CandidateView extends View {
         return mTotalWidth;
     }
 
-    @Override
+    @Override       //todo: add +600 to height tehn I BET I CAN GET MOTIONEVENTS THERE!!!!!!!!! :D
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int measuredWidth = resolveSize(50, widthMeasureSpec);
         
@@ -145,8 +148,10 @@ public class CandidateView extends View {
                 + padding.top + padding.bottom;
         
         // Maximum possible width and desired height
+//        setMeasuredDimension(measuredWidth,
+//                resolveSize(desiredHeight, heightMeasureSpec));
         setMeasuredDimension(measuredWidth,
-                resolveSize(desiredHeight, heightMeasureSpec));
+                resolveSize(desiredHeight+200, heightMeasureSpec));  //MY CHANGFE
     }
 
     /**

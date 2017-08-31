@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+        <com.blackcj.customkeyboard.LatinKeyboardViewCdda
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/base_keyboard_view"
+            android:layout_alignParentBottom="true"
+            android:paddingTop="0dp"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:keyPreviewLayout="@layout/preview"
+            android:keyBackground="@drawable/key_background"
+            android:keyTextColor="#fff"
+            android:background="@color/colorPrimaryDark"
+            android:popupLayout="@layout/keyboardview_popup" >
+        </com.blackcj.customkeyboard.LatinKeyboardViewCdda>
+
+
+<!--
+        <com.blackcj.customkeyboard.views.TouchAreaView
+            android:id="@+id/toucharea_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            />
+
+
+-->
+<!--
+
+<com.blackcj.customkeyboard.KeyboardViewContainerLayout
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/linearlayout_motion_area"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:paddingLeft="16dp"
+      android:paddingRight="16dp"
+      android:orientation="vertical" >
+
+
+        <com.blackcj.customkeyboard.LatinKeyboardViewCdda
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/base_keyboard_view"
+            android:layout_alignParentBottom="true"
+            android:paddingTop="0dp"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:keyPreviewLayout="@layout/preview"
+            android:keyBackground="@drawable/key_background"
+            android:keyTextColor="#fff"
+            android:background="@color/colorPrimaryDark"
+            android:popupLayout="@layout/keyboardview_popup" >
+        </com.blackcj.customkeyboard.LatinKeyboardViewCdda>
+
+</com.blackcj.customkeyboard.KeyboardViewContainerLayout>
+-->

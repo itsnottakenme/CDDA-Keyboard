@@ -38,10 +38,10 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
     private View vKeyboardViewHolder;
     private KeyboardView kvPopup;
     private int mPopupLayout;
-    private boolean mMiniKeyboardOnScreen;
+    private boolean mIsMiniKeyboardOnScreen;
     private View mPopupParent;
-    private int mMiniKeyboardOffsetX;
-    private int mMiniKeyboardOffsetY;
+    private int mkvPopupOffsetX;
+    private int mkvPopupOffsetY;
     private Map<Keyboard.Key,View> mMapOfKeyAndViewPairs;
     private Keyboard.Key[] mKeys;
     //Context mContext;
@@ -67,10 +67,6 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
 
     public LatinKeyboardViewCdda(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
-        //assign view for popup keyboard
-
-
         setupListeners();
         init(context, attrs);
     }
@@ -80,121 +76,43 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
 
     private void init(Context context, AttributeSet attrs)
     {
-
-
         /**
          *  todo: gets keyboard layout from xml file but too hard so just hardcoding for now
          */
-//        TypedArray a = context.obtainStyledAttributes(
-//                attrs, android.R.styleable.KeyboardView, defStyleAttr, defStyleRes);
-//
-//        LayoutInflater inflate =
-//                (LayoutInflater) context
-//                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//
-//        int previewLayout = 0;
-//        int keyTextSize = 0;
-//
-//        int n = a.getIndexCount();
-//
-//        for (int i = 0; i < n; i++)
-//        {
-//            int attr = a.getIndex(i);
-//
-//            switch (attr)
-//            {
-//                case com.android.internal.R.styleable.KeyboardView_popupLayout:
-//                    mPopupLayout = a.getResourceId(attr, 0);
-//                    break;
-//            }
-//        }
-
-
-
-
+        //        TypedArray a = context.obtainStyledAttributes(
+        //                attrs, android.R.styleable.KeyboardView, defStyleAttr, defStyleRes);
+        //
+        //        LayoutInflater inflate =
+        //                (LayoutInflater) context
+        //                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //
+        //        int previewLayout = 0;
+        //        int keyTextSize = 0;
+        //
+        //        int n = a.getIndexCount();
+        //
+        //        for (int i = 0; i < n; i++)
+        //        {
+        //            int attr = a.getIndex(i);
+        //
+        //            switch (attr)
+        //            {
+        //                case com.android.internal.R.styleable.KeyboardView_popupLayout:
+        //                    mPopupLayout = a.getResourceId(attr, 0);
+        //                    break;
+        //            }
+        //        }
         mPopupKeyboard = new PopupWindow(context);
         mPopupKeyboard.setBackgroundDrawable(null);
         mPopupKeyboard.setClippingEnabled(false); //todo: enable to show offscreen :D
-
+//false
     }
 
     private void setupListeners()    {
         /**
-         * todo: This is where I should handle popping up keyboard
-         *
+         * No need for this???
+         *it might be easier if kvPopup has its own onTouchEvent though...
          * */
-//        setOnKeyboardActionListener(new OnKeyboardActionListener()
-//        {
-//
-//            /**
-//             * todo: what the hell does this even do anymore????? I think I am handling this in onTouch()
-//             *      now and this can be deleted and the code and SoftKeyboardIME should be set as
-//             *      OnKeyboardActionListener() and should work without modification I think... hehe
-//             * @param primaryCode
-//             */
-//                    @Override
-//                    public void onPress(int primaryCode)
-//                    {
-//
-//                        /**
-//                         * todo: might be easier to jus CREATE NEW LISTENER that will return Key
-//                         *      as opposed to the primary code
-//                         */
-//                        //todo: Calls popup keyboard using onLongPress()
-//                        Keyboard.Key pressedKey= LatinKeyboardViewCdda.this.findPressedKey(primaryCode);
-//
-//                        if (pressedKey!=null)
-//                        {
-//                            LatinKeyboardViewCdda.this.onLongPress(pressedKey);
-//                        }
-//
-//
-//                        return;
-//                    }
-//
-//                    @Override
-//                    public void onRelease(int i)
-//                    {
-//                        //todo:  closes after pop up disappears. Change so happens after finger lifted
-//                        //invalidateAllKeys();
-//                    }
-//
-//                    @Override
-//                    public void onKey(int i, int[] ints)
-//                    {
-//
-//                    }
-//
-//                    @Override
-//                    public void onText(CharSequence charSequence)
-//                    {
-//
-//                    }
-//
-//                    @Override
-//                    public void swipeLeft()
-//                    {
-//
-//                    }
-//
-//                    @Override
-//                    public void swipeRight()
-//                    {
-//
-//                    }
-//
-//                    @Override
-//                    public void swipeDown()
-//                    {
-//
-//                    }
-//
-//                    @Override
-//                    public void swipeUp()
-//                    {
-//
-//                    }
-//        });
 
         return;
     }
@@ -202,6 +120,7 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
 
     /**
      * todo: ALL events must be processed here and sent to appropriate listener
+     * todo: crashes when more than one pointer touches screen... Make counter so only first ACTION_DOWN is processed
      *
      *
      *
@@ -212,16 +131,16 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
     @Override
     public boolean onTouchEvent (MotionEvent me)
     {
-        //assumption: I am processing ALL TouchEvents
         boolean result= true; //= super.onTouchEvent(me); //allows event to be processed normally
         int[] keyIndexes;
+        Keyboard keyboard;
         Keyboard.Key pressedKey;
-
-
-
-
         LayoutInflater layoutInflater;
 
+//        if (true)       //temporarily disable to see if FrameLayout gets event
+//        {
+//            return false;
+//        }
         //for debug TOAST messages only
         mX=me.getX();
         mY=me.getY();
@@ -229,18 +148,12 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
         mRawY=me.getRawY();
 
 
-
         if ( me.getActionMasked() == MotionEvent.ACTION_DOWN)
         {
             /**
              * Popup keyboard and centre over pressed key
-             *
-             *
              */
-
-
             keyIndexes= getKeyboard().getNearestKeys((int)me.getX(me.getPointerId(0)), (int)me.getY(me.getPointerId(0)));
-
             if (keyIndexes!=null)
             {   //pressed key:
                 pressedKey= getKeyboard().getKeys().get(keyIndexes[0]);
@@ -253,68 +166,53 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
                     vKeyboardViewHolder = layoutInflater.inflate(R.layout.keyboardview_popup, null);
                 }
 
-                //but haven't instantiated this kv yet though..
-                kvPopup = (KeyboardView) vKeyboardViewHolder.findViewById(R.id.keyboardView);
-                kvPopup.setOnKeyboardActionListener(null); // ACTION_UP HANDLES THE LISTENER DUTIES BELOW
-                /**
+
+                kvPopup = (KeyboardView) vKeyboardViewHolder.findViewById(R.id.popup_keyboard_view);
+
+                /** //todo setup listener. Maybe can stay null as currently base keyboard is delivering the messages
                  * Perhaps if I override onTouchEvent() for kvPopup... calling super constructor to do normal
                  * behavior as well... and only override the ACTION_UP to send KeyEvent... it maybe possible
                  * to have kvPopup handle its own events hmm...                 */
-                //todo setup listener. Maybe can stay null as currently base keyboard is delivering the messages
-//                (new OnKeyboardActionListener()
-//                {
-//                        public void onKey(int primaryCode, int[] keyCodes)
-//                       {
-////                            mKeyboardActionListener.onKey(primaryCode, keyCodes);
-////                            dismissPopupKeyboard();
-////                        }
-//
-//                        public void onText(CharSequence text) {
-////                            mKeyboardActionListener.onText(text);
-////                            dismissPopupKeyboard();
-////                        }
-//
-//                        public void swipeLeft() { }
-//                        public void swipeRight() { }
-//                        public void swipeUp() { }
-//                        public void swipeDown() { }
-//                        public void onPress(int primaryCode) {
-//                            mKeyboardActionListener.onPress(primaryCode);
-//                        }
-//                        public void onRelease(int primaryCode) {
-//                            mKeyboardActionListener.onRelease(primaryCode);
-//                        }
-//                });
+                //kvPopup.setOnKeyboardActionListener(null); // ACTION_UP HANDLES THE LISTENER DUTIES BELOW
 
-                //mInputView.setSuggest(mSuggest);
-                Keyboard keyboard;
 
-                    keyboard = new Keyboard(getContext(), R.xml.cdda_keyboard_popup);
+                keyboard = new Keyboard(getContext(), R.xml.cdda_keyboard_popup);
                 kvPopup.setKeyboard(keyboard);
-                kvPopup.setPopupParent(this);
+                kvPopup.setPopupParent(this);       //kvPopup determines coordinates relative to parent
                 kvPopup.setPreviewEnabled(true);        //todo:preview not showing... why?
 
-                //todo: keyboard doesnt popup without this hmm...
+                //TODO: Working BUT NEED get better value than 400!!!!!!
                 vKeyboardViewHolder.measure(
-                        MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.AT_MOST),
-                        MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.AT_MOST));//this may defeat clipping
+                        MeasureSpec.makeMeasureSpec(getKeyboard().getMinWidth()+400, MeasureSpec.AT_MOST),
+                        MeasureSpec.makeMeasureSpec(getKeyboard().getHeight(), MeasureSpec.AT_MOST));//this may defeat clipping
 
-
-
-
-                //this will popup the keyboard
                 mPopupKeyboard.setContentView(vKeyboardViewHolder);
                 mPopupKeyboard.setWidth(vKeyboardViewHolder.getMeasuredWidth());
                 mPopupKeyboard.setHeight(vKeyboardViewHolder.getMeasuredHeight());
-                //todo: change y so it matches height of original keyboard
-                //todo: center keyboard over key
-                //mPopupKeyboard.showAtLocation(this, Gravity.NO_GRAVITY, pressedKey.x, pressedKey.y-400);
-                mPopupKeyboard.showAtLocation(this, Gravity.NO_GRAVITY, 0, 0);
-                //todo: add code from KeyboardView.onLongPress()
 
-            mMiniKeyboardOnScreen = true;
-            //kvPopup.onTouchEvent(getTranslatedEvent(me));
-            invalidateAllKeys();
+
+
+
+
+                ////////CALCULATING POPUP KEYBOARD OFFSET//////////
+                int KeyboardWidth= getWidth();
+                int popupWidth= mPopupKeyboard.getWidth();
+                float percentHorizontalOffset = me.getRawX()/(float)getWidth();
+                int horizontalOffsetPopup= (int)(percentHorizontalOffset*mPopupKeyboard.getWidth());
+                int horizontalOffsetBase= (int)me.getX();//(int)percentHorizontalOffset*mPopupKeyboard.getWidth();
+                //subtract the distance
+
+                mkvPopupOffsetX=(int)me.getRawX()-horizontalOffsetPopup;
+
+                mkvPopupOffsetY= 50 ; //todo:make this a multiple of key height.its influenced by CandidateView
+                //////////////////////////////////////////////////////////////////
+
+
+
+
+                mPopupKeyboard.showAtLocation( this, Gravity.NO_GRAVITY, mkvPopupOffsetX, mkvPopupOffsetY);
+                mIsMiniKeyboardOnScreen = true;
+                invalidateAllKeys();
             }
         }
         else if ( me.getActionMasked() == MotionEvent.ACTION_UP)  //todo: me.getActionMasked() is correct way i think
@@ -322,18 +220,20 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
             //todo me.getRawX() vs me.getX WHICH ONE TO USE?????
 
 
+
             int[] kvPopupOffsets= new int[2];
-            //kvPopup.getLocationInWindow(kvPopupOffsets); //gives same output as absolute coords
-            int rawX= (int)me.getRawX(),
-                rawY= (int)me.getRawY();
+            kvPopup.getLocationOnScreen(kvPopupOffsets); // when view offscreen this just returns (0,0)
+            //kvPopup.getLocationInWindow(kvPopupOffsets);
 
-            kvPopup.getLocationOnScreen(kvPopupOffsets);
 
-            int pointerIndex= me.getActionIndex();
-            int     touchX= (int) me.getRawX() - (int)kvPopupOffsets[0] - kvPopup.getPaddingLeft(),
-                    touchY= (int) me.getRawY() - (int)kvPopupOffsets[1] - kvPopup.getPaddingTop();
+//            int     touchX= (int) me.getRawX() - (int)kvPopupOffsets[0] - kvPopup.getPaddingLeft(),
+//                    touchY= (int) me.getRawY() - (int)kvPopupOffsets[1] - kvPopup.getPaddingTop();
 //                if (touchY >= -mVerticalCorrection)
 //                    touchY += mVerticalCorrection;
+
+            //int popUpKeyboardRawY=
+            int     touchX= (int) me.getRawX() - mkvPopupOffsetX - kvPopup.getPaddingLeft();
+            int     touchY= (int) me.getRawY() - kvPopupOffsets[1];//- kvPopupOffsets[1]  - kvPopup.getPaddingTop();
 
 
 
@@ -350,7 +250,7 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
 
             //make sure the event gets consumed so that key is not pressed if not on keyboard key???
             //PopupWindow will handle keypress... not sure how will conflict here???
-            showToastInIntentService("trans:("+(int)touchX+", "+(int)touchY+") raw:("+(int)mRawX+","+(int)mRawY+") action_up");
+            showToastInIntentService("trans:("+(int)touchX+", "+(int)touchY+") raw:("+(int)me.getRawX()+","+(int)me.getRawY()+") action_up");
             dismissPopupKeyboard();
 
         }
@@ -358,13 +258,61 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
         return result;  //True if the event was handled, false otherwise.
     }
 
+
+
+
+
+
+
+
+
+
+
+    public void handleACTION_DOWN(MotionEvent me)
+    {
+        //copy and paste all ACTION_DOWN code
+        //leave onTouchEvent() empty so it overrides any default behavior
+    }
+
+    public void handleACTION_UP(MotionEvent me)
+    {
+        //copy and paste all ACTION_UP code
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     *
+     * @param sText
+     */
+
     public void showToastInIntentService(final String sText) {
         final Context MyContext = getContext();
 
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                Toast toast1 = Toast.makeText(MyContext, sText, Toast.LENGTH_LONG);
+                Toast toast1 = Toast.makeText(MyContext, sText, Toast.LENGTH_SHORT);
                 toast1.show();
             }
         });
@@ -394,7 +342,7 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
         if (mPopupKeyboard.isShowing())
         {
             mPopupKeyboard.dismiss();
-            mMiniKeyboardOnScreen = false;
+            mIsMiniKeyboardOnScreen = false;
             invalidateAllKeys();
         }
     }
@@ -457,6 +405,7 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
      * @param primaryCode
      * @return
      */
+    //todo: modify so no key is selected if values are outside view
      Keyboard.Key findPressedKey(int primaryCode)
     {
         List<Keyboard.Key> kkList;
@@ -479,4 +428,4 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
     }
 
 
-}
+}       //////END CLASS/////

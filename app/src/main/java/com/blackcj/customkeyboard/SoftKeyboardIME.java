@@ -40,6 +40,9 @@ import android.view.textservice.SuggestionsInfo;
 import android.view.textservice.TextInfo;
 import android.view.textservice.TextServicesManager;
 
+import com.blackcj.customkeyboard.views.CandidateView;
+import com.blackcj.customkeyboard.views.TouchInterceptLayout_NOTUSED;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +95,13 @@ public class SoftKeyboardIME extends InputMethodService
     private SpellCheckerSession mScs;
     private List<String> mSuggestions;
 
+    //my adds
+    //
+    private TouchInterceptLayout_NOTUSED flKeyboardContainer;
+
+
+
+
 
 
     /**
@@ -99,6 +109,14 @@ public class SoftKeyboardIME extends InputMethodService
      * to super class.
      */
     @Override public void onCreate() {
+
+
+        //todo: remove debug code
+        //android.os.Debug.waitForDebugger();
+
+
+
+
         super.onCreate();
         mInputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
         mWordSeparators = getResources().getString(R.string.word_separators);
@@ -132,12 +150,43 @@ public class SoftKeyboardIME extends InputMethodService
      * a configuration change.
      */
     @Override public View onCreateInputView() {
-        mKeyboardView = (LatinKeyboardViewCdda) getLayoutInflater().inflate(R.layout.keyboardview_base, null);
+        flKeyboardContainer = (TouchInterceptLayout_NOTUSED) getLayoutInflater().inflate(R.layout.fullscreen_touch_area, null);
+        mKeyboardView = (LatinKeyboardViewCdda) getLayoutInflater().inflate(R.layout.keyboard_layout, null);
+        //flKeyboardContainer.addKeyboardView((LatinKeyboardViewCdda)mKeyboardView);
+
+        /**
+         * To bring layout in front of keyboard for touch events... if this doesn't work can always
+         * make onTouch() in KeyboardView empty
+         */
+/**
+        flKeyboardContainer.bringToFront();
+        flKeyboardContainer.requestLayout();
+        //mKeyboardView.requestLayout();
+        flKeyboardContainer.invalidate();
+        //mKeyboardView.invalidate();
+**/
+
+
+        /**
+         * todo: Make flKeyboardContainer pass events from onTouch to mKeyboardView
+         * ********************START HERE****************
+         * flKeyboardContainer.onTouch() method call mKeyboardView.onTouch(m
+         *
+         * setTouchEventListener(mKeyboardView)
+         *
+         * in mKeyboardView
+         *
+         *
+         */
+
+
+
+
 
         /**
          * todo:
          */
-        mKeyboardView.setOnKeyboardActionListener(this);        //todo: this overrides my listener in LatinKeyboardViewCdda
+        mKeyboardView.setOnKeyboardActionListener(this);
         mKeyboardView.setPreviewEnabled(true); //todo: turn on preview?
         setLatinKeyboard(mQwertyKeyboard);
         return mKeyboardView;

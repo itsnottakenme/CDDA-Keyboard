@@ -3,3 +3,41 @@
 KeyboardView
 -getX() and getY() return (x,y) values in KeyBoardView. (0,0) is top left hand corner of view. Upwards is negative
 -getRawX(), getRawY() return coordinates of screen top left corner: (0,0), bottom right corner (1280, 768)
+
+
+
+
+
+
+
+
+
+Problems to solve
+1) Show key preview popup for kvPopup
+
+
+2) Center kvPopup over pressed key on base
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FINISHED
+----------------------------------
+
+3) Stop clipping of popup keybaord width
+not sure if this is happening or not....solve 1) and 2) first!!!!!
+
+
