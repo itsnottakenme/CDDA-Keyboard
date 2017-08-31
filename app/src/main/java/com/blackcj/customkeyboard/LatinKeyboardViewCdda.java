@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
     private boolean mKeyPressEnabled; // todo: differentiates between sending KeyEvent or not
                                         // do for popup keyboard but not base
 
-
+    private List<Integer> pointerIndexList; //for keeping track of ACTION_UP, MOTION, and DOWN tuples
 
 
     //todo: breakpoints in constructors are never called? why???
@@ -105,6 +106,7 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
         mPopupKeyboard = new PopupWindow(context);
         mPopupKeyboard.setBackgroundDrawable(null);
         mPopupKeyboard.setClippingEnabled(false); //todo: enable to show offscreen :D
+        pointerIndexList= new ArrayList<Integer>();
 //false
     }
 
@@ -132,15 +134,8 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
     public boolean onTouchEvent (MotionEvent me)
     {
         boolean result= true; //= super.onTouchEvent(me); //allows event to be processed normally
-        int[] keyIndexes;
-        Keyboard keyboard;
-        Keyboard.Key pressedKey;
-        LayoutInflater layoutInflater;
+        int index;
 
-//        if (true)       //temporarily disable to see if FrameLayout gets event
-//        {
-//            return false;
-//        }
         //for debug TOAST messages only
         mX=me.getX();
         mY=me.getY();
@@ -150,117 +145,138 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
 
         if ( me.getActionMasked() == MotionEvent.ACTION_DOWN)
         {
-            /**
-             * Popup keyboard and centre over pressed key
-             */
-            keyIndexes= getKeyboard().getNearestKeys((int)me.getX(me.getPointerId(0)), (int)me.getY(me.getPointerId(0)));
-            if (keyIndexes!=null)
-            {   //pressed key:
-                pressedKey= getKeyboard().getKeys().get(keyIndexes[0]);
-
-
-                //load popup keybaord and setup
-                layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                if (layoutInflater != null)
-                {
-                    vKeyboardViewHolder = layoutInflater.inflate(R.layout.keyboardview_popup, null);
-                }
-
-
-                kvPopup = (KeyboardView) vKeyboardViewHolder.findViewById(R.id.popup_keyboard_view);
-
-                /** //todo setup listener. Maybe can stay null as currently base keyboard is delivering the messages
-                 * Perhaps if I override onTouchEvent() for kvPopup... calling super constructor to do normal
-                 * behavior as well... and only override the ACTION_UP to send KeyEvent... it maybe possible
-                 * to have kvPopup handle its own events hmm...                 */
-                //kvPopup.setOnKeyboardActionListener(null); // ACTION_UP HANDLES THE LISTENER DUTIES BELOW
-
-
-                keyboard = new Keyboard(getContext(), R.xml.cdda_keyboard_popup);
-                kvPopup.setKeyboard(keyboard);
-                kvPopup.setPopupParent(this);       //kvPopup determines coordinates relative to parent
-                kvPopup.setPreviewEnabled(true);        //todo:preview not showing... why?
-
-                //TODO: Working BUT NEED get better value than 400!!!!!!
-                vKeyboardViewHolder.measure(
-                        MeasureSpec.makeMeasureSpec(getKeyboard().getMinWidth()+400, MeasureSpec.AT_MOST),
-                        MeasureSpec.makeMeasureSpec(getKeyboard().getHeight(), MeasureSpec.AT_MOST));//this may defeat clipping
-
-                mPopupKeyboard.setContentView(vKeyboardViewHolder);
-                mPopupKeyboard.setWidth(vKeyboardViewHolder.getMeasuredWidth());
-                mPopupKeyboard.setHeight(vKeyboardViewHolder.getMeasuredHeight());
-
-
-
-
-
-                ////////CALCULATING POPUP KEYBOARD OFFSET//////////
-                int KeyboardWidth= getWidth();
-                int popupWidth= mPopupKeyboard.getWidth();
-                float percentHorizontalOffset = me.getRawX()/(float)getWidth();
-                int horizontalOffsetPopup= (int)(percentHorizontalOffset*mPopupKeyboard.getWidth());
-                int horizontalOffsetBase= (int)me.getX();//(int)percentHorizontalOffset*mPopupKeyboard.getWidth();
-                //subtract the distance
-
-                mkvPopupOffsetX=(int)me.getRawX()-horizontalOffsetPopup;
-
-                mkvPopupOffsetY= 50 ; //todo:make this a multiple of key height.its influenced by CandidateView
-                //////////////////////////////////////////////////////////////////
-
-
-
-
-                mPopupKeyboard.showAtLocation( this, Gravity.NO_GRAVITY, mkvPopupOffsetX, mkvPopupOffsetY);
-                mIsMiniKeyboardOnScreen = true;
-                invalidateAllKeys();
+            if (pointerIndexList.size() == 0)
+            {   //assert: only first finger is processed. Others are ignored
+                pointerIndexList.add(me.getActionIndex());
+                popupKeyboard(me);
             }
+
         }
         else if ( me.getActionMasked() == MotionEvent.ACTION_UP)  //todo: me.getActionMasked() is correct way i think
-        {//todo is this code better here or in listener for kvPopup?
-            //todo me.getRawX() vs me.getX WHICH ONE TO USE?????
-
-
-
-            int[] kvPopupOffsets= new int[2];
-            kvPopup.getLocationOnScreen(kvPopupOffsets); // when view offscreen this just returns (0,0)
-            //kvPopup.getLocationInWindow(kvPopupOffsets);
-
-
-//            int     touchX= (int) me.getRawX() - (int)kvPopupOffsets[0] - kvPopup.getPaddingLeft(),
-//                    touchY= (int) me.getRawY() - (int)kvPopupOffsets[1] - kvPopup.getPaddingTop();
-//                if (touchY >= -mVerticalCorrection)
-//                    touchY += mVerticalCorrection;
-
-            //int popUpKeyboardRawY=
-            int     touchX= (int) me.getRawX() - mkvPopupOffsetX - kvPopup.getPaddingLeft();
-            int     touchY= (int) me.getRawY() - kvPopupOffsets[1];//- kvPopupOffsets[1]  - kvPopup.getPaddingTop();
-
-
-
-
-            // get KeyEvent data from kvPopup, send it and then close popup keyboard
-            //todo: Keyboard.getNearestKeys(). This is a hack fix for that
-            keyIndexes= getNearestKeys(touchX, touchY, kvPopup.getKeyboard());//kvPopup.getKeyboard(). getNearestKeys(touchX, touchY);
-
-            if (keyIndexes!=null && keyIndexes.length>0)
-            {   //pressed key:
-                pressedKey = kvPopup.getKeyboard().getKeys().get(keyIndexes[0]);
-                getOnKeyboardActionListener().onKey(pressedKey.codes[0], pressedKey.codes);
+        {
+            index = pointerIndexList.indexOf(me.getActionIndex());
+            if (index>-1)       //only process MotionEvents whose ACTION_DOWNS have been processed
+            {
+                pointerIndexList.remove(index);
+                sendKeyandDismissKeyboard(me);
             }
-
-            //make sure the event gets consumed so that key is not pressed if not on keyboard key???
-            //PopupWindow will handle keypress... not sure how will conflict here???
-            showToastInIntentService("trans:("+(int)touchX+", "+(int)touchY+") raw:("+(int)me.getRawX()+","+(int)me.getRawY()+") action_up");
-            dismissPopupKeyboard();
-
         }
+        //else
+        //todo: what to do with ACTION_CANCEL and others??
 
-        return result;  //True if the event was handled, false otherwise.
+        return result;// false;//result;  //True if the event was handled, false otherwise.
     }
 
 
 
+    private void popupKeyboard(MotionEvent me)
+    {
+        boolean result= true; //= super.onTouchEvent(me); //allows event to be processed normally
+        int[] keyIndexes;
+        Keyboard keyboard;
+        Keyboard.Key pressedKey;
+        LayoutInflater layoutInflater;
 
+        /**
+         * Popup keyboard and centre over pressed key
+         */
+        keyIndexes= getKeyboard().getNearestKeys((int)me.getX(me.getPointerId(0)), (int)me.getY(me.getPointerId(0)));
+        if (keyIndexes!=null)
+        {   //pressed key:
+            pressedKey= getKeyboard().getKeys().get(keyIndexes[0]);
+
+
+            //load popup keybaord and setup
+            layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            if (layoutInflater != null)
+            {
+                vKeyboardViewHolder = layoutInflater.inflate(R.layout.keyboardview_popup, null);
+            }
+
+
+            kvPopup = (KeyboardView) vKeyboardViewHolder.findViewById(R.id.popup_keyboard_view);
+
+            /** //todo setup listener. Maybe can stay null as currently base keyboard is delivering the messages
+             * Perhaps if I override onTouchEvent() for kvPopup... calling super constructor to do normal
+             * behavior as well... and only override the ACTION_UP to send KeyEvent... it maybe possible
+             * to have kvPopup handle its own events hmm...                 */
+            //kvPopup.setOnKeyboardActionListener(null); // ACTION_UP HANDLES THE LISTENER DUTIES BELOW
+
+
+            keyboard = new Keyboard(getContext(), R.xml.cdda_keyboard_popup);
+            kvPopup.setKeyboard(keyboard);
+            kvPopup.setPopupParent(this);       //kvPopup determines coordinates relative to parent
+            kvPopup.setPreviewEnabled(true);        //todo:preview not showing... why?
+
+            //TODO: Working BUT NEED get better value than 400!!!!!!
+            vKeyboardViewHolder.measure(
+                    MeasureSpec.makeMeasureSpec(getKeyboard().getMinWidth()+400, MeasureSpec.AT_MOST),
+                    MeasureSpec.makeMeasureSpec(getKeyboard().getHeight(), MeasureSpec.AT_MOST));//this may defeat clipping
+
+            mPopupKeyboard.setContentView(vKeyboardViewHolder);
+            mPopupKeyboard.setWidth(vKeyboardViewHolder.getMeasuredWidth());
+            mPopupKeyboard.setHeight(vKeyboardViewHolder.getMeasuredHeight());
+
+
+
+
+
+            ////////CALCULATING POPUP KEYBOARD OFFSET//////////
+            int KeyboardWidth= getWidth();
+            int popupWidth= mPopupKeyboard.getWidth();
+            float percentHorizontalOffset = me.getRawX()/(float)getWidth();
+            int horizontalOffsetPopup= (int)(percentHorizontalOffset*mPopupKeyboard.getWidth());
+            int horizontalOffsetBase= (int)me.getX();//(int)percentHorizontalOffset*mPopupKeyboard.getWidth();
+            //subtract the distance
+
+            mkvPopupOffsetX=(int)me.getRawX()-horizontalOffsetPopup;
+
+            mkvPopupOffsetY= 50 ; //todo:make this a multiple of key height.its influenced by CandidateView
+            //////////////////////////////////////////////////////////////////
+
+
+
+
+            mPopupKeyboard.showAtLocation( this, Gravity.NO_GRAVITY, mkvPopupOffsetX, mkvPopupOffsetY);
+            mIsMiniKeyboardOnScreen = true;
+            invalidateAllKeys();
+        }
+        return;
+    }
+
+    private void sendKeyandDismissKeyboard(MotionEvent me)
+    {
+        boolean result= true; //= super.onTouchEvent(me); //allows event to be processed normally
+        int[] keyIndexes;
+        Keyboard keyboard;
+        Keyboard.Key pressedKey;
+        LayoutInflater layoutInflater;
+
+
+        int[] kvPopupOffsets= new int[2];
+        kvPopup.getLocationOnScreen(kvPopupOffsets); // when view offscreen this just returns (0,0)
+        //kvPopup.getLocationInWindow(kvPopupOffsets);
+
+
+        int     touchX= (int) me.getRawX() - mkvPopupOffsetX - kvPopup.getPaddingLeft();
+        int     touchY= (int) me.getRawY() - kvPopupOffsets[1];//- kvPopupOffsets[1]  - kvPopup.getPaddingTop();
+
+
+
+
+        //NOTE Keyboard.getNearestKeys() is broken. This is a hack fix for that
+        keyIndexes= getNearestKeys(touchX, touchY, kvPopup.getKeyboard());//kvPopup.getKeyboard(). getNearestKeys(touchX, touchY);
+
+        if (keyIndexes!=null && keyIndexes.length>0)
+        {   //pressed key:
+            pressedKey = kvPopup.getKeyboard().getKeys().get(keyIndexes[0]);
+            getOnKeyboardActionListener().onKey(pressedKey.codes[0], pressedKey.codes);
+        }
+
+        dismissPopupKeyboard();
+
+        return;
+    }
 
 
 

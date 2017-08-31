@@ -195,7 +195,7 @@ public class SoftKeyboardIME extends InputMethodService
     private void setLatinKeyboard(LatinKeyboard nextKeyboard) {
         final boolean shouldSupportLanguageSwitchKey =
                 mInputMethodManager.shouldOfferSwitchingToNextInputMethod(getToken());
-        nextKeyboard.setLanguageSwitchKeyVisibility(shouldSupportLanguageSwitchKey);
+        //nextKeyboard.setLanguageSwitchKeyVisibility(shouldSupportLanguageSwitchKey);
         mKeyboardView.setKeyboard(nextKeyboard);
     }
 
@@ -299,7 +299,7 @@ public class SoftKeyboardIME extends InputMethodService
         
         // Update the label on the enter key, depending on what the application
         // says it will do.
-        mCurKeyboard.setImeOptions(getResources(), attribute.imeOptions);
+        //mCurKeyboard.setImeOptions(getResources(), attribute.imeOptions);
     }
 
     /**
