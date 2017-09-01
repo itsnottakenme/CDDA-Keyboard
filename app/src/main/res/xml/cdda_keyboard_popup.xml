@@ -38,8 +38,8 @@ todo: keyWidth is not being obeyed... why??
         <Row>
                 <!--ALPHA CAPITALS-->
                 <Key android:codes="65" android:keyLabel="A"  android:popupCharacters="2"/>
-                <Key android:codes="66" android:keyLabel="B"/>
-                <Key android:codes="67" android:keyLabel="C"/>
+                <Key android:codes="66" android:keyLabel="B"  android:popupCharacters="2"/>
+                <Key android:codes="67" android:keyLabel="C"  android:popupCharacters="2"/>
                 <Key android:codes="68" android:keyLabel="D"/>
                 <Key android:codes="69" android:keyLabel="E" />
                 <Key android:codes="70" android:keyLabel="F"/>

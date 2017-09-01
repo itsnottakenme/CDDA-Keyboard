@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,11 +49,11 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
     private Keyboard.Key[] mKeys;
     //Context mContext;
 
-    //debug printing toasts ONLY
-    private float   mX,
-                    mY,
-                    mRawX,
-                    mRawY;
+//debug printing toasts ONLY
+//    private float   mX,
+//                    mY,
+//                    mRawX,
+//                    mRawY;
 
     private boolean mKeyPressEnabled; // todo: differentiates between sending KeyEvent or not
                                         // do for popup keyboard but not base
@@ -113,7 +115,8 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
     private void setupListeners()    {
         /**
          * No need for this???
-         *it might be easier if kvPopup has its own onTouchEvent though...
+         *it might be easier if kvPopup
+         *  has its own onTouchEvent though...
          * */
 
         return;
@@ -136,11 +139,12 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
         boolean result= true; //= super.onTouchEvent(me); //allows event to be processed normally
         int index;
 
-        //for debug TOAST messages only
-        mX=me.getX();
-        mY=me.getY();
-        mRawX=me.getRawX();
-        mRawY=me.getRawY();
+
+        /**
+         * Instead of relying on CandidateView to get coordinates
+         * try:
+         *  ABSOLUTE_X= (ACTION_DOWN).getRawX()+(ACTION_UP).getX()
+         */
 
 
         if ( me.getActionMasked() == MotionEvent.ACTION_DOWN)
@@ -161,12 +165,79 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
                 sendKeyandDismissKeyboard(me);
             }
         }
-        //else
-        //todo: what to do with ACTION_CANCEL and others??
+        else if (me.getActionMasked() == MotionEvent.ACTION_MOVE)
+        {
+            //does this catch original ACTION_MOVE as well
+            popupKeyPreview(me);
+        }
+        else //todo: what to do with ACTION_CANCEL and others??
+        {
 
-        return result;// false;//result;  //True if the event was handled, false otherwise.
+        }
+
+
+
+        return true;//result;// false;//result;  //True if the event was handled, false otherwise.
     }
 
+
+    private void popupKeyPreview(MotionEvent me)
+    {
+        float   transX,  //transformed (x,) in MotionEvent to
+                transY;
+        MotionEvent transMe;
+
+        /**
+         * Todo further process MotionEvent (or create new one!) before passing to kvPopup
+         * 1) Are (x,y) coords ok or do they need to be transformed?
+         * 2) Only send events in bounds of kvPopup?
+         *          YES TOO MANY EVENTS BEING SENT TO kvpopup
+         */
+        //for debug TOAST messages only
+        float mX=me.getX();
+        float mY=me.getY();
+        float mRawX=me.getRawX();
+        float mRawY=me.getRawY();
+
+        float dog= mX+mY+mRawX+mRawY;
+
+
+
+
+        int[] kvPopupCoords= new int[2];
+        kvPopup.getLocationOnScreen(kvPopupCoords); // when view offscreen this just returns (0,0)
+
+        if (    me.getRawX()>kvPopupCoords[0] && me.getRawX()<kvPopupCoords[0]+kvPopup.getWidth()
+             && me.getRawY()>kvPopupCoords[1]  && me.getRawY()<kvPopupCoords[1]+kvPopup.getHeight() )
+        {// assert: MotionEvent ocurred in popup keyboard
+            ////////////////////////////
+            //todo: create new MotionEvent with translated coords
+            ///////////////////////////////
+            transX= me.getRawX()-mkvPopupOffsetX; //these coords look correct
+            transY= me.getRawY()+mkvPopupOffsetY-kvPopupCoords[1];
+
+            transMe= MotionEvent.obtain(me.getDownTime(), me.getEventTime(), MotionEvent.ACTION_DOWN, transX, transY, 0);
+
+
+            kvPopup.onTouchEvent(transMe);
+
+        }
+
+
+
+    //create MotionEvent and sent to kvPopup
+
+
+
+
+
+
+        //only start sending once pointer is inside bounds of popup
+
+
+
+        return;
+    }
 
 
     private void popupKeyboard(MotionEvent me)
@@ -174,7 +245,7 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
         boolean result= true; //= super.onTouchEvent(me); //allows event to be processed normally
         int[] keyIndexes;
         Keyboard keyboard;
-        Keyboard.Key pressedKey;
+      //  Keyboard.Key pressedKey;
         LayoutInflater layoutInflater;
 
         /**
@@ -183,7 +254,7 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
         keyIndexes= getKeyboard().getNearestKeys((int)me.getX(me.getPointerId(0)), (int)me.getY(me.getPointerId(0)));
         if (keyIndexes!=null)
         {   //pressed key:
-            pressedKey= getKeyboard().getKeys().get(keyIndexes[0]);
+         //   pressedKey= getKeyboard().getKeys().get(keyIndexes[0]);
 
 
             //load popup keybaord and setup
@@ -196,11 +267,110 @@ public class LatinKeyboardViewCdda extends LatinKeyboardView
 
             kvPopup = (KeyboardView) vKeyboardViewHolder.findViewById(R.id.popup_keyboard_view);
 
-            /** //todo setup listener. Maybe can stay null as currently base keyboard is delivering the messages
-             * Perhaps if I override onTouchEvent() for kvPopup... calling super constructor to do normal
-             * behavior as well... and only override the ACTION_UP to send KeyEvent... it maybe possible
-             * to have kvPopup handle its own events hmm...                 */
-            //kvPopup.setOnKeyboardActionListener(null); // ACTION_UP HANDLES THE LISTENER DUTIES BELOW
+            kvPopup.setOnKeyboardActionListener(new OnKeyboardActionListener()
+                {
+                        List<Integer> mPressedKeys = new ArrayList<Integer>();
+                        Map<Integer, Integer> primaryCodetoKeyIndexMap;
+
+                        /**
+                         * Press key down on keyboard to activate popup
+                         * todo: is this code currently executing?? YES!!! but no press is passed
+                         * @param primaryCode
+                         */
+
+                        @Override
+                        public void onPress(int primaryCode)
+                        {
+                            List<Keyboard.Key> keys = kvPopup.getKeyboard().getKeys();
+                            Keyboard.Key pressedKey;// = keys.get(keys.indexOf(primaryCode));
+
+
+                            //build up hashmap
+                            if (primaryCodetoKeyIndexMap==null)
+                            {
+                                primaryCodetoKeyIndexMap = new HashMap<Integer, Integer>();
+                                for (int i=0; i<keys.size(); i++)
+                                {
+                                    //todo; this needs to fixed to work with multiple keycodes
+                                    primaryCodetoKeyIndexMap.put(keys.get(i).codes[0], i);
+                                }
+                            }
+
+                            //process primaryCode
+                            if (primaryCode != NOT_A_KEY && primaryCode!= KeyEvent.KEYCODE_UNKNOWN)
+                            {           //assert its a valid keycode
+
+                                /**
+                                 * primaryCodetoKeyIndexMap doesn't work!!!
+                                 * Threadign issue possibly?????
+                                 * break into separate lines of code!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                 */
+
+                                Integer keyIndex= primaryCodetoKeyIndexMap.get((Integer)primaryCode);
+                            // try cast as Integer?????????????????????????????
+                                if (keyIndex!=null && keys.get(keyIndex)!=null)
+                                {
+                                    pressedKey = keys.get( keyIndex);
+                                    pressedKey.pressed= true;
+                                    mPressedKeys.add(primaryCode);
+
+                                }
+                            }
+                            return;
+                        }
+
+                        @Override
+                        public void onRelease(int primaryCode)
+                        {
+                            if (primaryCode != NOT_A_KEY)
+                            {
+                                List<Keyboard.Key> keys = kvPopup.getKeyboard().getKeys();
+
+
+                                Keyboard.Key releasedKey =keys.get(primaryCodetoKeyIndexMap.get(primaryCode));
+
+                                releasedKey.pressed = false;
+                                mPressedKeys.remove(primaryCode);
+                            }
+                            return;
+                        }
+
+                        @Override
+                        public void onKey(int primaryCode, int[] keyCodes)
+                        {
+
+                        }
+
+                        @Override
+                        public void onText(CharSequence text)
+                        {
+
+                        }
+
+                        @Override
+                        public void swipeLeft()
+                        {
+
+                        }
+
+                        @Override
+                        public void swipeRight()
+                        {
+
+                        }
+
+                        @Override
+                        public void swipeDown()
+                        {
+
+                        }
+
+                        @Override
+                        public void swipeUp()
+                        {
+
+                        }
+                    });
 
 
             keyboard = new Keyboard(getContext(), R.xml.cdda_keyboard_popup);

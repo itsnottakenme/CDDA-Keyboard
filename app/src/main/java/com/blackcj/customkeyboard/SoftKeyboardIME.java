@@ -187,7 +187,7 @@ public class SoftKeyboardIME extends InputMethodService
          * todo:
          */
         mKeyboardView.setOnKeyboardActionListener(this);
-        mKeyboardView.setPreviewEnabled(true); //todo: turn on preview?
+        mKeyboardView.setPreviewEnabled(false); //no previews for base keyboard
         setLatinKeyboard(mQwertyKeyboard);
         return mKeyboardView;
     }
