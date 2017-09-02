@@ -146,12 +146,20 @@ public class PopupKeyboardView extends KeyboardView
 
 
         //todo: double check this bounding box.. but should be fine
-        if (me.getRawX() > kvPopupCoords[0] && me.getRawX() < kvPopupCoords[0] + getWidth()
-                && me.getRawY() > kvPopupCoords[1] && me.getRawY() < kvPopupCoords[1] + getHeight())
+//        if (me.getRawX() > kvPopupCoords[0] && me.getRawX() < kvPopupCoords[0] + getWidth()
+//                && me.getRawY() > kvPopupCoords[1] && me.getRawY() < kvPopupCoords[1] + getHeight())
         {
 
+            //todo
             transX = me.getRawX() - mMotionEventOffsetX-getPaddingLeft();
-            transY = me.getRawY() + mMotionEventOffsetY - kvPopupCoords[1]-getPaddingBottom();
+
+
+            /**
+             *            coordinates are relative to BaseKeyboardView
+             */
+            transY = me.getRawY()-kvPopupCoords[1];//-mMotionEventOffsetY;// -getPaddingBottom();
+
+            //transY = me.getY();//me.getRawY() + mMotionEventOffsetY - kvPopupCoords[1]-getPaddingBottom();
             mCurrentKeyOver= Util.getKeyAtCoordifExists((int) transX, (int) transY, getKeyboard());
 
 
@@ -366,7 +374,7 @@ public class PopupKeyboardView extends KeyboardView
     }
 
     /**
-     *
+     *      shows popup for mCurrentKey
      */
     public void showKeyPopup()
     {
@@ -385,9 +393,13 @@ public class PopupKeyboardView extends KeyboardView
             pwKeyPreview.setWidth(layout.getMeasuredWidth()+100);
             pwKeyPreview.setHeight(layout.getMeasuredHeight()+100);
 
+
+            /**
+             * todo change y value so he same regardless of key row
+             */
             pwKeyPreview.showAtLocation(vParent, Gravity.NO_GRAVITY,
-                    /**(int)me.getRawX()**/ mCurrentKeyOver.x +mMotionEventOffsetX - (mCurrentKeyOver.width)/2,
-                    mCurrentKeyOver.y - 2 * mCurrentKeyOver.height);
+                    mCurrentKeyOver.x +mMotionEventOffsetX - (mCurrentKeyOver.width)/2,
+                    0-mCurrentKeyOver.height);
 
         }
 
