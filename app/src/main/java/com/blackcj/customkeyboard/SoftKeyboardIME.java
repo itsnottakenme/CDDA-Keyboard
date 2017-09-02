@@ -151,7 +151,7 @@ public class SoftKeyboardIME extends InputMethodService
      */
     @Override public View onCreateInputView() {
         flKeyboardContainer = (TouchInterceptLayout_NOTUSED) getLayoutInflater().inflate(R.layout.fullscreen_touch_area, null);
-        mKeyboardView = (LatinKeyboardViewCdda) getLayoutInflater().inflate(R.layout.keyboard_layout, null);
+        mKeyboardView = (BaseKeyboardView) getLayoutInflater().inflate(R.layout.keyboard_layout, null);
         //flKeyboardContainer.addKeyboardView((LatinKeyboardViewCdda)mKeyboardView);
 
         /**
@@ -623,6 +623,8 @@ public class SoftKeyboardIME extends InputMethodService
         } else {
             handleCharacter(primaryCode, keyCodes);
         }
+
+        mCandidateView.invalidate(); //////////////////////////this does nothing!!!!!!!!!!
     }
 
     public void onText(CharSequence text) {

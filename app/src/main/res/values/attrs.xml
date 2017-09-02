@@ -2,7 +2,7 @@
 <resources>
 
     <!-- todo: supposed to make LatinKeyboardCdda be able to get refence to keyboard layout -->
-    <declare-styleable name="LatinKeyboardViewCdda">
+    <declare-styleable name="BaseKeyboardView">
         <!-- format should either be string or reference I guess-->
         <attr name="popupLayout" format="reference"/>
     </declare-styleable>

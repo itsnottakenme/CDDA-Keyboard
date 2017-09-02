@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-        <com.blackcj.customkeyboard.LatinKeyboardViewCdda
+        <com.blackcj.customkeyboard.BaseKeyboardView
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/base_keyboard_view"
             android:layout_alignParentBottom="true"
             android:paddingTop="0dp"
+            android:alpha="0.7"
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -14,7 +15,7 @@
             android:keyTextColor="#fff"
             android:background="@color/colorPrimaryDark"
             android:popupLayout="@layout/keyboardview_popup" >
-        </com.blackcj.customkeyboard.LatinKeyboardViewCdda>
+        </com.blackcj.customkeyboard.BaseKeyboardView>
 
 <!--
 I don't know if the view can resize with

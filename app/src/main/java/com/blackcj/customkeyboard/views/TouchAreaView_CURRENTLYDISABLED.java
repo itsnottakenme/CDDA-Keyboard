@@ -5,9 +5,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.LinearLayout;
 
-import com.blackcj.customkeyboard.LatinKeyboardViewCdda;
+import com.blackcj.customkeyboard.BaseKeyboardView;
 import com.blackcj.customkeyboard.R;
 
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ import java.util.List;
 
 public class TouchAreaView_CURRENTLYDISABLED extends View
 {
-    LatinKeyboardViewCdda mKeyboardView;
+    BaseKeyboardView mKeyboardView;
     List<Integer> pointerIndexList;
 
     int[] mPointerCounter;
@@ -49,7 +48,7 @@ public class TouchAreaView_CURRENTLYDISABLED extends View
     private void init()
     {
 
-        mKeyboardView = (LatinKeyboardViewCdda)getRootView().findViewById(R.id.base_keyboard_view);
+        mKeyboardView = (BaseKeyboardView)getRootView().findViewById(R.id.base_keyboard_view);
         pointerIndexList = new ArrayList<>();
 
     }

@@ -1,15 +1,12 @@
 package com.blackcj.customkeyboard.views;
 
 import android.content.Context;
-import android.inputmethodservice.KeyboardView;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.FrameLayout;
 
-import com.blackcj.customkeyboard.LatinKeyboardViewCdda;
-import com.blackcj.customkeyboard.R;
+import com.blackcj.customkeyboard.BaseKeyboardView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +25,7 @@ import java.util.List;
 
 public class TouchInterceptLayout_NOTUSED extends FrameLayout
 {
-    LatinKeyboardViewCdda mKeyboardView;
+    BaseKeyboardView mKeyboardView;
     List<Integer> pointerIndexList;
 
 
@@ -146,7 +143,7 @@ public class TouchInterceptLayout_NOTUSED extends FrameLayout
     }
 
 
-    public void addKeyboardView(LatinKeyboardViewCdda kv)
+    public void addKeyboardView(BaseKeyboardView kv)
     {
         mKeyboardView= kv;
 

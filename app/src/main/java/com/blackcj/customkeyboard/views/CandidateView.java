@@ -19,6 +19,7 @@ package com.blackcj.customkeyboard.views;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -160,66 +161,76 @@ public class CandidateView extends View {
      */
     @Override
     protected void onDraw(Canvas canvas) {
-        if (canvas != null) {
+        if (canvas != null)
+        {
+            //tododraw code never called. WHy???
             super.onDraw(canvas);
-        }
-        mTotalWidth = 0;
-        if (mSuggestions == null) return;
-        
-        if (mBgPadding == null) {
-            mBgPadding = new Rect(0, 0, 0, 0);
-            if (getBackground() != null) {
-                getBackground().getPadding(mBgPadding);
-            }
-        }
-        int x = 0;
-        final int count = mSuggestions.size(); 
-        final int height = getHeight();
-        final Rect bgPadding = mBgPadding;
-        final Paint paint = mPaint;
-        final int touchX = mTouchX;
-        final int scrollX = getScrollX();
-        final boolean scrolled = mScrolled;
-        final boolean typedWordValid = mTypedWordValid;
-        final int y = (int) (((height - mPaint.getTextSize()) / 2) - mPaint.ascent());
 
-        for (int i = 0; i < count; i++) {
-            String suggestion = mSuggestions.get(i);
-            float textWidth = paint.measureText(suggestion);
-            final int wordWidth = (int) textWidth + X_GAP * 2;
+            Paint paint = new Paint();
+            paint.setTextAlign(Paint.Align.CENTER);
+            paint.setTextSize(60);
+            paint.setColor(Color.LTGRAY);
 
-            mWordX[i] = x;
-            mWordWidth[i] = wordWidth;
-            paint.setColor(mColorNormal);
-            if (touchX + scrollX >= x && touchX + scrollX < x + wordWidth && !scrolled) {
-                if (canvas != null) {
-                    canvas.translate(x, 0);
-                    mSelectionHighlight.setBounds(0, bgPadding.top, wordWidth, height);
-                    mSelectionHighlight.draw(canvas);
-                    canvas.translate(-x, 0);
-                }
-                mSelectedIndex = i;
-            }
 
-            if (canvas != null) {
-                if ((i == 1 && !typedWordValid) || (i == 0 && typedWordValid)) {
-                    paint.setFakeBoldText(true);
-                    paint.setColor(mColorRecommended);
-                } else if (i != 0) {
-                    paint.setColor(mColorOther);
-                }
-                canvas.drawText(suggestion, x + X_GAP, y, paint);
-                paint.setColor(mColorOther); 
-                canvas.drawLine(x + wordWidth + 0.5f, bgPadding.top, 
-                        x + wordWidth + 0.5f, height + 1, paint);
-                paint.setFakeBoldText(false);
-            }
-            x += wordWidth;
+            canvas.drawText("1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111", 0, 0, paint);
         }
-        mTotalWidth = x;
-        if (mTargetScrollX != getScrollX()) {
-            scrollToTarget();
-        }
+//        mTotalWidth = 0;
+//        if (mSuggestions == null) return;
+//
+//        if (mBgPadding == null) {
+//            mBgPadding = new Rect(0, 0, 0, 0);
+//            if (getBackground() != null) {
+//                getBackground().getPadding(mBgPadding);
+//            }
+//        }
+//        int x = 0;
+//        final int count = mSuggestions.size();
+//        final int height = getHeight();
+//        final Rect bgPadding = mBgPadding;
+//        final Paint paint = mPaint;
+//        final int touchX = mTouchX;
+//        final int scrollX = getScrollX();
+//        final boolean scrolled = mScrolled;
+//        final boolean typedWordValid = mTypedWordValid;
+//        final int y = (int) (((height - mPaint.getTextSize()) / 2) - mPaint.ascent());
+//
+//        for (int i = 0; i < count; i++) {
+//            String suggestion = mSuggestions.get(i);
+//            float textWidth = paint.measureText(suggestion);
+//            final int wordWidth = (int) textWidth + X_GAP * 2;
+//
+//            mWordX[i] = x;
+//            mWordWidth[i] = wordWidth;
+//            paint.setColor(mColorNormal);
+//            if (touchX + scrollX >= x && touchX + scrollX < x + wordWidth && !scrolled) {
+//                if (canvas != null) {
+//                    canvas.translate(x, 0);
+//                    mSelectionHighlight.setBounds(0, bgPadding.top, wordWidth, height);
+//                    mSelectionHighlight.draw(canvas);
+//                    canvas.translate(-x, 0);
+//                }
+//                mSelectedIndex = i;
+//            }
+//
+//            if (canvas != null) {
+//                if ((i == 1 && !typedWordValid) || (i == 0 && typedWordValid)) {
+//                    paint.setFakeBoldText(true);
+//                    paint.setColor(mColorRecommended);
+//                } else if (i != 0) {
+//                    paint.setColor(mColorOther);
+//                }
+//                canvas.drawText(suggestion, x + X_GAP, y, paint);
+//                paint.setColor(mColorOther);
+//                canvas.drawLine(x + wordWidth + 0.5f, bgPadding.top,
+//                        x + wordWidth + 0.5f, height + 1, paint);
+//                paint.setFakeBoldText(false);
+//            }
+//            x += wordWidth;
+//        }
+//        mTotalWidth = x;
+//        if (mTargetScrollX != getScrollX()) {
+//            scrollToTarget();
+//        }
     }
     
     private void scrollToTarget() {
@@ -266,41 +277,41 @@ public class CandidateView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent me) {
 
-        if (mGestureDetector.onTouchEvent(me)) {
-            return true;
-        }
-
-        int action = me.getAction();
-        int x = (int) me.getX();
-        int y = (int) me.getY();
-        mTouchX = x;
-
-        switch (action) {
-        case MotionEvent.ACTION_DOWN:
-            mScrolled = false;
-            invalidate();
-            break;
-        case MotionEvent.ACTION_MOVE:
-            if (y <= 0) {
-                // Fling up!?
-                if (mSelectedIndex >= 0) {
-                    mService.pickSuggestionManually(mSelectedIndex);
-                    mSelectedIndex = -1;
-                }
-            }
-            invalidate();
-            break;
-        case MotionEvent.ACTION_UP:
-            if (!mScrolled) {
-                if (mSelectedIndex >= 0) {
-                    mService.pickSuggestionManually(mSelectedIndex);
-                }
-            }
-            mSelectedIndex = -1;
-            removeHighlight();
-            requestLayout();
-            break;
-        }
+//        if (mGestureDetector.onTouchEvent(me)) {
+//            return true;
+//        }
+//
+//        int action = me.getAction();
+//        int x = (int) me.getX();
+//        int y = (int) me.getY();
+//        mTouchX = x;
+//
+//        switch (action) {
+//        case MotionEvent.ACTION_DOWN:
+//            mScrolled = false;
+//            invalidate();
+//            break;
+//        case MotionEvent.ACTION_MOVE:
+//            if (y <= 0) {
+//                // Fling up!?
+//                if (mSelectedIndex >= 0) {
+//                    mService.pickSuggestionManually(mSelectedIndex);
+//                    mSelectedIndex = -1;
+//                }
+//            }
+//            invalidate();
+//            break;
+//        case MotionEvent.ACTION_UP:
+//            if (!mScrolled) {
+//                if (mSelectedIndex >= 0) {
+//                    mService.pickSuggestionManually(mSelectedIndex);
+//                }
+//            }
+//            mSelectedIndex = -1;
+//            removeHighlight();
+//            requestLayout();
+//            break;
+//        }
         return true;
     }
     
@@ -309,18 +320,18 @@ public class CandidateView extends View {
      * gesture.
      * @param x
      */
-    public void takeSuggestionAt(float x) {
-        mTouchX = (int) x;
-        // To detect candidate
-        onDraw(null);
-        if (mSelectedIndex >= 0) {
-            mService.pickSuggestionManually(mSelectedIndex);
-        }
-        invalidate();
-    }
-
-    private void removeHighlight() {
-        mTouchX = OUT_OF_BOUNDS;
-        invalidate();
-    }
+//    public void takeSuggestionAt(float x) {
+//        mTouchX = (int) x;
+//        // To detect candidate
+//        onDraw(null);
+//        if (mSelectedIndex >= 0) {
+//            mService.pickSuggestionManually(mSelectedIndex);
+//        }
+//        invalidate();
+//    }
+//
+//    private void removeHighlight() {
+//        mTouchX = OUT_OF_BOUNDS;
+//        invalidate();
+//    }
 }

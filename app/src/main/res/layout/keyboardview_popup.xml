@@ -2,7 +2,7 @@
 
 
 
-    <android.inputmethodservice.KeyboardView
+    <com.blackcj.customkeyboard.PopupKeyboardView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/popup_keyboard_view"
         android:layout_width="wrap_content"
@@ -14,4 +14,4 @@
         android:background="@color/colorPrimaryDark"
         android:keyTextSize="25sp"/>
 
-    <!-- todo: change KeyboardView to CddaKeyboardView?? not sure haha -->
+
