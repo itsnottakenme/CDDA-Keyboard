@@ -33,7 +33,8 @@ public class AlternateKeyboard extends Keyboard
 
     /**
      *
-     * todo: implement findNearestKeys here.
+     * todo: implement findKeyByCoord() here. Current code in Util.getKeyAtCoordifExists()
+     *
      *
      */
 

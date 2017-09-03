@@ -39,24 +39,8 @@ public class BaseKeyboardView extends LatinKeyboardView
     private PopupWindow pwKeyboardContainer;
     private View vKeyboardViewLayout;
     private PopupKeyboardView kvPopup;
-    private int mPopupLayout;
-    private boolean mIsMiniKeyboardOnScreen;
-    private View mPopupParent;
     private int mkvPopupOffsetX;
     private int mkvPopupOffsetY;
-    private Map<Keyboard.Key,View> mMapOfKeyAndViewPairs;
-    private Keyboard.Key[] mKeys;
-    //Context mContext;
-
-//debug printing toasts ONLY
-//    private float   mX,
-//                    mY,
-//                    mRawX,
-//                    mRawY;
-
-    private boolean mKeyPressEnabled; // todo: differentiates between sending KeyEvent or not
-                                        // do for popup keyboard but not base
-
     private List<Integer> pointerIndexList; //for keeping track of ACTION_UP, MOTION, and DOWN tuples
 
 
@@ -178,22 +162,8 @@ public class BaseKeyboardView extends LatinKeyboardView
 
 
 
-        return true;//result;// false;//result;  //True if the event was handled, false otherwise.
+        return true;    // true == all MotionEvents handled
     }
-
-
-//    private void popupKeyPreview(MotionEvent me)
-//    {
-//
-//        //PopupKeyboard will translate coords
-//        kvPopup.onTouchEvent(me);
-//
-//
-//
-//
-//
-//        return;
-//    }
 
 
     /**
@@ -202,7 +172,7 @@ public class BaseKeyboardView extends LatinKeyboardView
      */
     private void popupKeyboard(MotionEvent me)
     {
-        boolean result= true; //= super.onTouchEvent(me); //allows event to be processed normally
+
         int[] keyIndexes;
         Keyboard keyboard;
 
@@ -350,12 +320,8 @@ public class BaseKeyboardView extends LatinKeyboardView
 
 
             ////////CALCULATING POPUP KEYBOARD OFFSET//////////
-//            int KeyboardWidth= getWidth();
-//            int popupWidth= pwKeyboardContainer.getWidth();
             float percentHorizontalOffset = me.getRawX()/(float)getWidth();
             int horizontalOffsetPopup= (int)(percentHorizontalOffset* pwKeyboardContainer.getWidth());
-//            int horizontalOffsetBase= (int)me.getX();//(int)percentHorizontalOffset*pwKeyboardContainer.getWidth();
-            //subtract the distance
 
             mkvPopupOffsetX=(int)me.getRawX()-horizontalOffsetPopup;
             mkvPopupOffsetY= 50 ; //todo:make this a multiple of key height.its influenced by CandidateView
@@ -365,7 +331,6 @@ public class BaseKeyboardView extends LatinKeyboardView
 
             pwKeyboardContainer.showAtLocation( this, Gravity.NO_GRAVITY, mkvPopupOffsetX, mkvPopupOffsetY);
             kvPopup.setPreviewBindingParent_hack(this);
-            mIsMiniKeyboardOnScreen = true;
             invalidateAllKeys();
         }
         return;
@@ -373,11 +338,8 @@ public class BaseKeyboardView extends LatinKeyboardView
 
     private void sendKeyandDismissKeyboard(MotionEvent me)
     {
-        boolean result= true; //= super.onTouchEvent(me); //allows event to be processed normally
-        int[] keyIndexes;
-        Keyboard keyboard;
         Keyboard.Key pressedKey;
-        LayoutInflater layoutInflater;
+
 
         int[] kvPopupOffsets= new int[2];
         kvPopup.getLocationOnScreen(kvPopupOffsets); // when view offscreen this just returns (0,0)
@@ -386,11 +348,10 @@ public class BaseKeyboardView extends LatinKeyboardView
         //todo padding should be calculated within KeyboardSubClass.findKey
         //having this code outside and also in
         int     touchX= (int) me.getRawX() - mkvPopupOffsetX - kvPopup.getPaddingLeft();
-        int     touchY= (int) me.getRawY() - kvPopupOffsets[1];//- kvPopupOffsets[1]  - kvPopup.getPaddingTop();
+        int     touchY= (int) me.getRawY() - kvPopupOffsets[1];
 
 
         //NOTE Keyboard.getKeyAtCoordifExists() is broken. This is a hack fix for that
-       // keyIndexes= Util.getKeyAtCoordifExists(touchX, touchY, kvPopup.getKeyboard());//kvPopup.getKeyboard(). getKeyAtCoordifExists(touchX, touchY);
         pressedKey= Util.getKeyAtCoordifExists(touchX, touchY, kvPopup.getKeyboard());
 
         if (pressedKey!=null)
@@ -402,39 +363,6 @@ public class BaseKeyboardView extends LatinKeyboardView
 
         return;
     }
-
-
-
-
-
-
-
-    public void handleACTION_DOWN(MotionEvent me)
-    {
-        //copy and paste all ACTION_DOWN code
-        //leave onTouchEvent() empty so it overrides any default behavior
-    }
-
-    public void handleACTION_UP(MotionEvent me)
-    {
-        //copy and paste all ACTION_UP code
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -471,91 +399,11 @@ public class BaseKeyboardView extends LatinKeyboardView
         {
             kvPopup.dismissKeyPopup();
             pwKeyboardContainer.dismiss();
-            mIsMiniKeyboardOnScreen = false;
             kvPopup.resetKeyHistory();
             invalidateAllKeys();
         }
     }
 
-
-
-//    //@Override
-//    public  boolean onHoverEvent_MOVEthisCODE(MotionEvent me)
-//    {
-//
-//        int[] keyIndexes;
-//        int indexOfLastKey=-1;  //todo this needs to be made a class variable..
-//                                //if currentKey!=lastKey close last popup and open new one
-//
-//        if (me.getAction() ==MotionEvent.ACTION_HOVER_ENTER)
-//        {       //assert: show popup
-//
-//        }
-//        else if (me.getAction() ==MotionEvent.ACTION_HOVER_EXIT)
-//        {       //assert: hide popup
-//            //todo:method requires ints but me has floats. WHAT IS THE MEANING????
-//            // test to see if float and int are compatible...
-//            keyIndexes= getKeyboard().getKeyAtCoordifExists((int)me.getX(me.getPointerId(0)), (int)me.getY(me.getPointerId(0)));
-//
-//            //keyIndexes[0] is the index of pressed key
-//            //
-//            //handleBack(); //closes popup keyboard :DDD
-//            /**
-//             * could invalidate() but that would happen if finger moved to popup menu too
-//             * so test if finger is on popup menu too...
-//             *
-//             *
-//             *
-//             */
-//
-//        }
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//        return super.onHoverEvent(me);
-//    }
-
-
-
-
-
-//    /**
-//     * Returns
-//     * 1) currently PRESSED key
-//     *  - better option but keys aren't showing as being pressed....
-//     *  //            if (key.pressed == true)
-//     * -or-
-//     * 2) the key who's primary code is givem
-//     * @param primaryCode
-//     * @return
-//     */
-//    //todo: modify so no key is selected if values are outside view
-//     Keyboard.Key findPressedKey(int primaryCode)
-//    {
-//        List<Keyboard.Key> kkList;
-//        kkList= getKeyboard().getKeys(); // this gets keyboard i can query for primaryCode...
-//        Keyboard.Key pressedKey= null;
-//
-//
-//        for (Keyboard.Key key : kkList)
-//        {
-//
-//            if (primaryCode == key.codes[0])    //todo: this DOES NOT work for keys with codes more than 1
-//            {
-//                pressedKey= key;
-//            }
-//
-//        }
-//
-//
-//        return pressedKey;
-//    }
 
 
 }       //////END CLASS/////

@@ -204,174 +204,17 @@ public class PopupKeyboardView extends KeyboardView
     }
 
 
-
-
-//    //    @Override
-//    public boolean onTouchEvent_OLD_AND_CRAPPY(MotionEvent me)
-//    {
-//        float transX,  //transformed (x,) in MotionEvent to
-//                transY;
-//        MotionEvent transMe= null;
-//        int keyIndex;
-//        //Keyboard.Key keyUnderPointer = null;
-//        boolean meHandled= true;
-//        Keyboard.Key key;       //key that is being hovered over
-//
-//        /**
-//         * Todo further process MotionEvent (or create new one!) before passing to kvPopup
-//         * 1) Are (x,y) coords ok or do they need to be transformed?
-//         * 2) Only send events in bounds of kvPopup?
-//         *          YES TOO MANY EVENTS BEING SENT TO kvpopup
-//         */
-//        //for debug TOAST messages only
-//        float mX = me.getX();
-//        float mY = me.getY();
-//        float mRawX = me.getRawX();
-//        float mRawY = me.getRawY();
-//
-//        float dog = mX + mY + mRawX + mRawY;
-//
-//
-//        int[] kvPopupCoords = new int[2];
-//        getLocationOnScreen(kvPopupCoords); // when view offscreen this just returns (0,0)
-//
-//
-//        //todo: double check this bounding box.. but should be fine
-//        if (me.getRawX() > kvPopupCoords[0] && me.getRawX() < kvPopupCoords[0] + getWidth()
-//                && me.getRawY() > kvPopupCoords[1] && me.getRawY() < kvPopupCoords[1] + getHeight())
-//        {// assert: MotionEvent occurred in popup keyboard
-//            ////////////////////////////
-//            //Create new MotionEvent with translated coords
-//            ///////////////////////////////
-//
-//
-//            int[] location = new int[2];
-//            getLocationOnScreen(location);
-//
-//            transX = me.getRawX() - mMotionEventOffsetX-getPaddingLeft();
-//            mTransX= (int)transX;
-//            transY = me.getRawY() + mMotionEventOffsetY - kvPopupCoords[1]-getPaddingBottom();
-//
-//
-//            //todo:
-//            key= Util.getKeyAtCoordifExists((int) transX, (int) transY, getKeyboard());
-//
-//            if (key!=null)
-//            {       //assert: MotionEvent is within a keys boundaries
-//                mCurrentKeyOver= key;
-//
-//                //decide which key to send
-//                if (mlastKeyOver== null)
-//                {       //I guess the ACTION_DOWN is on a region outside the key
-//                    transMe = MotionEvent.obtain(me.getDownTime(), me.getEventTime(), MotionEvent.ACTION_DOWN, transX, transY, 0);
-//                    showKeyPopup(me);
-//                }
-//                else if (mlastKeyOver == mCurrentKeyOver) //should be ok since same references
-//                {
-//                    //nothing has changed so no updates needed
-//                }
-//
-//                else if (mCurrentKeyOver != mlastKeyOver)
-//                {   //key has changed so send new MotionEvent
-//                    //todo how to unpress previous key? is it needed?
-//                    transMe = MotionEvent.obtain(me.getDownTime(), me.getEventTime(), MotionEvent.ACTION_MOVE, transX, transY, 0);
-//                    showKeyPopup(me);
-//                }
-//
-//                //mlastKeyOver= key;
-//
-//            }
-//            else //assert: key is null
-//            {       //create MotionEvent to unpress key
-//
-//                //causes key never to highlight:
-//                //mCurrentKeyOver= null;
-//                //transMe = MotionEvent.obtain(me.getDownTime(), me.getEventTime(), MotionEvent.ACTION_MOVE, transX, transY, 0);
-//            }
-//
-//            if (transMe!=null)
-//            {   //transmit modified MotionEvent if touch is within key boundaries
-//                //todo: superclass implementation (of getNearestKeys() is DUMB. DO NOT RELY ON to press keys
-//                //press them myself!!!!!!!!!!!
-//                meHandled = super.onTouchEvent(transMe);            //this causes key to be highlighted
-//            }
-//            else
-//            {
-//
-//            }
-//            mlastKeyOver= key;
-//        }
-//        else
-//        {
-//            mlastKeyOver= null;
-//        }
-//
-//            return true;//meHandled;
-//
-//
-//    }
-
-
-
-
-
-     private  View vParent;
+    /**
+     * For attaching popup to BasekeyboardView since can't open a popup with a popup as a parent
+     * How can this be better implemented?
+     */
+    private  View vParent;
     public void setPreviewBindingParent_hack(View v)
     {
         vParent= v;
     }
 
 
-    /**
-     * todo: Popup window never shown. WHY???????????????
-     */
-
-//    private void showKeyPopup(MotionEvent me)
-//    {
-//
-//    }
-
-    /**
-     * todo: I can't figure out correct coordinates for showing popup so I will try  onDraw() again
-     * @param me
-     */
-    private void showKeyPreview_OLD(MotionEvent me)
-    {
-
-        LayoutInflater layoutInflater;
-        View layout;
-        TextView tv;
-
-
-            //load popup keybaord and setup
-            layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            if (layoutInflater != null)
-            {
-                layout= layoutInflater.inflate(R.layout.preview, null);
-                tv= (TextView)layout.findViewById(R.id.key_preview_textview);
-                tv.setText(mCurrentKeyOver.label);
-                pwKeyPreview.setContentView(layout);
-                pwKeyPreview.setWidth(layout.getMeasuredWidth()+100);
-                pwKeyPreview.setHeight(layout.getMeasuredHeight()+100);
-
-                ///////////////
-                int keyX= mCurrentKeyOver.x;
-                int keyY= mCurrentKeyOver.y;
-                int x= (int)me.getRawX(), y=layout.getMeasuredHeight(), z=x+y+keyX+keyY;
-                Keyboard.Key kkk= mCurrentKeyOver; kkk.isInside(1,1);
-               ////////////////
-                //mCurrentKeyOver=???? does it change? YEP. CORRECT KEYS BEING PASSED BUT THE POPUP DOESN CHANGE HMM....
-
-
-
-                pwKeyPreview.showAtLocation(vParent, Gravity.NO_GRAVITY,
-                        /**(int)me.getRawX()**/ mCurrentKeyOver.x +mMotionEventOffsetX - (mCurrentKeyOver.width)/2,
-                                            mCurrentKeyOver.y - 2 * mCurrentKeyOver.height);
-                //invalidateAllKeys(); //what does it do???
-            }            //transX = me.getRawX() - mMotionEventOffsetX;
-
-
-    }
 
     /**
      *      shows popup for mCurrentKey

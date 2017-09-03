@@ -29,6 +29,10 @@ import android.view.inputmethod.InputMethodSubtype;
 
 import java.util.List;
 
+
+/**
+ * Unused can be deleted and replaced by KeyboardView for subclasses
+ */
 public class LatinKeyboardView extends KeyboardView {
 
     static final int KEYCODE_OPTIONS = -100;

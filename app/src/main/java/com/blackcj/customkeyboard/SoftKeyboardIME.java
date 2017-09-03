@@ -75,8 +75,8 @@ public class SoftKeyboardIME extends InputMethodService
     
     private StringBuilder mComposing = new StringBuilder();
 
-    final private boolean mPredictionOn= false;  //todo:prediction permanently disabled.. i hope!
-    final private boolean mCompletionOn= false;  //todo:completion permanently disabled.. i hope!;
+    final private boolean mPredictionOn= false;  //todo:prediction permanently disabled..
+    final private boolean mCompletionOn= false;  //todo:completion permanently disabled..
 
 
     private int mLastDisplayWidth;
@@ -96,8 +96,7 @@ public class SoftKeyboardIME extends InputMethodService
     private List<String> mSuggestions;
 
     //my adds
-    //
-    private TouchInterceptLayout_NOTUSED flKeyboardContainer;
+    //private TouchInterceptLayout_NOTUSED tilKeyboardContainer;
 
 
 
@@ -150,42 +149,29 @@ public class SoftKeyboardIME extends InputMethodService
      * a configuration change.
      */
     @Override public View onCreateInputView() {
-        flKeyboardContainer = (TouchInterceptLayout_NOTUSED) getLayoutInflater().inflate(R.layout.fullscreen_touch_area, null);
+        //tilKeyboardContainer = (TouchInterceptLayout_NOTUSED) getLayoutInflater().inflate(R.layout.fullscreen_touch_area, null);
         mKeyboardView = (BaseKeyboardView) getLayoutInflater().inflate(R.layout.keyboard_layout, null);
         //flKeyboardContainer.addKeyboardView((LatinKeyboardViewCdda)mKeyboardView);
 
         /**
+         * todo: currently CandidateView is a dummy view to allow catching of MotionEvents above KeyboardView via hardcode
+         *  I wish I understood how it works!
+
+         *
+         *
          * To bring layout in front of keyboard for touch events... if this doesn't work can always
          * make onTouch() in KeyboardView empty
-         */
-/**
+         *
+         *
+         *          */
+        /**     // NOT WORKING
         flKeyboardContainer.bringToFront();
         flKeyboardContainer.requestLayout();
         //mKeyboardView.requestLayout();
         flKeyboardContainer.invalidate();
         //mKeyboardView.invalidate();
-**/
+        **/
 
-
-        /**
-         * todo: Make flKeyboardContainer pass events from onTouch to mKeyboardView
-         * ********************START HERE****************
-         * flKeyboardContainer.onTouch() method call mKeyboardView.onTouch(m
-         *
-         * setTouchEventListener(mKeyboardView)
-         *
-         * in mKeyboardView
-         *
-         *
-         */
-
-
-
-
-
-        /**
-         * todo:
-         */
         mKeyboardView.setOnKeyboardActionListener(this);
         mKeyboardView.setPreviewEnabled(false); //no previews for base keyboard
         setLatinKeyboard(mQwertyKeyboard);
@@ -228,8 +214,6 @@ public class SoftKeyboardIME extends InputMethodService
             mMetaState = 0;
         }
         
-//        mPredictionOn = false;
-//        mCompletionOn = false;
         mCompletions = null;
         
         // We are now going to initialize our state based on the type of
@@ -426,69 +410,69 @@ public class SoftKeyboardIME extends InputMethodService
      * We get first crack at them, and can either resume them or let them
      * continue to the app.
      */
-    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BACK:
-                // The InputMethodService already takes care of the back
-                // key for us, to dismiss the keyboardview_base method if it is shown.
-                // However, our keyboard could be showing a pop-up window
-                // that back should dismiss, so we first allow it to do that.
-                if (event.getRepeatCount() == 0 && mKeyboardView != null) {
-                    if (mKeyboardView.handleBack()) {
-                        return true;
-                    }
-                }
-                break;
-                
-            case KeyEvent.KEYCODE_DEL:
-
-                // Special handling of the delete key: if we currently are
-                // composing text for the user, we want to modify that instead
-                // of let the application to the delete itself.
-                if (mComposing.length() > 0) {
-                    onKey(Keyboard.KEYCODE_DELETE, null);
-                    return true;
-                }
-                break;
-                
-            case KeyEvent.KEYCODE_ENTER:
-                // Let the underlying text editor always handle these.
-                return false;
-            default:
-                // For all other keys, if we want to do transformations on
-                // text being entered with a hard keyboard, we need to process
-                // it and do the appropriate action.
-                /*
-                if (PROCESS_HARD_KEYS) {
-                    if (keyCode == KeyEvent.KEYCODE_SPACE
-                            && (event.getMetaState()&KeyEvent.META_ALT_ON) != 0) {
-                        // A silly example: in our keyboardview_base method, Alt+Space
-                        // is a shortcut for 'android' in lower case.
-                        InputConnection ic = getCurrentInputConnection();
-                        if (ic != null) {
-                            // First, tell the editor that it is no longer in the
-                            // shift state, since we are consuming this.
-                            ic.clearMetaKeyStates(KeyEvent.META_ALT_ON);
-                            keyDownUp(KeyEvent.KEYCODE_A);
-                            keyDownUp(KeyEvent.KEYCODE_N);
-                            keyDownUp(KeyEvent.KEYCODE_D);
-                            keyDownUp(KeyEvent.KEYCODE_R);
-                            keyDownUp(KeyEvent.KEYCODE_O);
-                            keyDownUp(KeyEvent.KEYCODE_I);
-                            keyDownUp(KeyEvent.KEYCODE_D);
-                            // And we consume this event.
-                            return true;
-                        }
-                    }
-                    if (mPredictionOn && translateKeyDown(keyCode, event)) {
-                        return true;
-                    }
-                }*/
-        }
-        
-        return super.onKeyDown(keyCode, event);
-    }
+//    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+//
+//        switch (keyCode) {
+//            case KeyEvent.KEYCODE_BACK:
+//                // The InputMethodService already takes care of the back
+//                // key for us, to dismiss the keyboardview_base method if it is shown.
+//                // However, our keyboard could be showing a pop-up window
+//                // that back should dismiss, so we first allow it to do that.
+//                if (event.getRepeatCount() == 0 && mKeyboardView != null) {
+//                    if (mKeyboardView.handleBack()) {
+//                        return true;
+//                    }
+//                }
+//                break;
+//
+//            case KeyEvent.KEYCODE_DEL:
+//
+//                // Special handling of the delete key: if we currently are
+//                // composing text for the user, we want to modify that instead
+//                // of let the application to the delete itself.
+//                if (mComposing.length() > 0) {
+//                    onKey(Keyboard.KEYCODE_DELETE, null);
+//                    return true;
+//                }
+//                break;
+//
+//            case KeyEvent.KEYCODE_ENTER:
+//                // Let the underlying text editor always handle these.
+//                return false;
+//            default:
+//                // For all other keys, if we want to do transformations on
+//                // text being entered with a hard keyboard, we need to process
+//                // it and do the appropriate action.
+//                /*
+//                if (PROCESS_HARD_KEYS) {
+//                    if (keyCode == KeyEvent.KEYCODE_SPACE
+//                            && (event.getMetaState()&KeyEvent.META_ALT_ON) != 0) {
+//                        // A silly example: in our keyboardview_base method, Alt+Space
+//                        // is a shortcut for 'android' in lower case.
+//                        InputConnection ic = getCurrentInputConnection();
+//                        if (ic != null) {
+//                            // First, tell the editor that it is no longer in the
+//                            // shift state, since we are consuming this.
+//                            ic.clearMetaKeyStates(KeyEvent.META_ALT_ON);
+//                            keyDownUp(KeyEvent.KEYCODE_A);
+//                            keyDownUp(KeyEvent.KEYCODE_N);
+//                            keyDownUp(KeyEvent.KEYCODE_D);
+//                            keyDownUp(KeyEvent.KEYCODE_R);
+//                            keyDownUp(KeyEvent.KEYCODE_O);
+//                            keyDownUp(KeyEvent.KEYCODE_I);
+//                            keyDownUp(KeyEvent.KEYCODE_D);
+//                            // And we consume this event.
+//                            return true;
+//                        }
+//                    }
+//                    if (mPredictionOn && translateKeyDown(keyCode, event)) {
+//                        return true;
+//                    }
+//                }*/
+//        }
+//
+//        return super.onKeyDown(keyCode, event);
+//    }
 
     /**
      * Use this to monitor key events being delivered to the application.
