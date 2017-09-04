@@ -36,34 +36,33 @@ todo: keyWidth is not being obeyed... why??
 
 
         <Row>
-                <!--ALPHA CAPITALS-->
-                <Key android:codes="65" android:keyLabel="A"  android:popupCharacters="2"/>
-                <Key android:codes="66" android:keyLabel="B"  android:popupCharacters="2"/>
-                <Key android:codes="67" android:keyLabel="C"  android:popupCharacters="2"/>
-                <Key android:codes="68" android:keyLabel="D"/>
-                <Key android:codes="69" android:keyLabel="E" />
-                <Key android:codes="70" android:keyLabel="F"/>
-                <Key android:codes="71" android:keyLabel="G"/>
-                <Key android:codes="72" android:keyLabel="H"/>
-                <Key android:codes="73" android:keyLabel="I"/>
-                <Key android:codes="74" android:keyLabel="J"/>
-                <Key android:codes="75" android:keyLabel="K"/>
-                <Key android:codes="76" android:keyLabel="L" />
-                <Key android:codes="77" android:keyLabel="M"/>
-                <Key android:codes="78" android:keyLabel="N"/>
-                <Key android:codes="79" android:keyLabel="O"/>
-                <Key android:codes="80" android:keyLabel="P" />
-                <Key android:codes="81" android:keyLabel="Q" />
-                <Key android:codes="82" android:keyLabel="R" />
-                <Key android:codes="83" android:keyLabel="S"/>
-                <Key android:codes="84" android:keyLabel="T"/>
-                <Key android:codes="85" android:keyLabel="U"/>
-                <Key android:codes="86" android:keyLabel="V"/>
-                <Key android:codes="87" android:keyLabel="W" />
-                <Key android:codes="88" android:keyLabel="X"/>
-                <Key android:codes="89" android:keyLabel="Y"/>
-                <Key android:codes="90" android:keyLabel="Z"/>
-            <!-- 26 keys -->
+                <!--ALPHA CAPITALS 26 key-->
+            <Key android:codes="65" android:keyLabel="A"  android:popupCharacters="2"/>
+            <Key android:codes="66" android:keyLabel="B"  android:popupCharacters="2"/>
+            <Key android:codes="67" android:keyLabel="C"  android:popupCharacters="2"/>
+            <Key android:codes="68" android:keyLabel="D"/>
+            <Key android:codes="69" android:keyLabel="E" />
+            <Key android:codes="70" android:keyLabel="F"/>
+            <Key android:codes="71" android:keyLabel="G"/>
+            <Key android:codes="72" android:keyLabel="H"/>
+            <Key android:codes="73" android:keyLabel="I"/>
+            <Key android:codes="74" android:keyLabel="J"/>
+            <Key android:codes="75" android:keyLabel="K"/>
+            <Key android:codes="76" android:keyLabel="L" />
+            <Key android:codes="77" android:keyLabel="M"/>
+            <Key android:codes="78" android:keyLabel="N"/>
+            <Key android:codes="79" android:keyLabel="O"/>
+            <Key android:codes="80" android:keyLabel="P" />
+            <Key android:codes="81" android:keyLabel="Q" />
+            <Key android:codes="82" android:keyLabel="R" />
+            <Key android:codes="83" android:keyLabel="S"/>
+            <Key android:codes="84" android:keyLabel="T"/>
+            <Key android:codes="85" android:keyLabel="U"/>
+            <Key android:codes="86" android:keyLabel="V"/>
+            <Key android:codes="87" android:keyLabel="W" />
+            <Key android:codes="88" android:keyLabel="X"/>
+            <Key android:codes="89" android:keyLabel="Y"/>
+            <Key android:codes="90" android:keyLabel="Z"/>
 
 
 
@@ -87,6 +86,10 @@ todo: keyWidth is not being obeyed... why??
             <Key android:codes="43" android:keyLabel="+"/>
             <Key android:codes="91" android:keyLabel="["/>
             <Key android:codes="124" android:keyLabel="|"/>
+            <Key android:codes="32" android:keyLabel=" "/>
+            <Key android:codes="10" android:keyLabel="En" />
+            <Key android:codes="@integer/key_page_up" android:keyLabel="Pu"/>
+
 
         </Row>
 
@@ -138,6 +141,16 @@ todo: keyWidth is not being obeyed... why??
             <Key android:codes="58" android:keyLabel=":"/>
             <Key android:codes="59" android:keyLabel=";"/>
             <Key android:codes="47" android:keyLabel="/" />
+            <Key android:codes="32" android:keyLabel=" "/>
+            <Key android:codes="46" android:keyLabel="."/>
+
+            <!-- todo code fixed but not sure if  working.... android keycode vs windows keycode???
+             win keycode for page down is 34 while android one is -93
+             prob need change-
+             -->
+            <Key android:codes="@integer/key_page_down" android:keyLabel="Pd"/>
+
+
 
 
         </Row>

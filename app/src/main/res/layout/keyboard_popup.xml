@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:keyPreviewLayout="@layout/preview"
-        android:popupLayout="@layout/keyboardview_popup"
+        android:popupLayout="@layout/keyboard_popup"
         android:keyBackground="@drawable/key_background"
         android:keyTextColor="#fff"
         android:background="@color/colorPrimaryDark"

@@ -6,7 +6,7 @@
             android:id="@+id/base_keyboard_view"
             android:layout_alignParentBottom="true"
             android:paddingTop="0dp"
-            android:alpha="0.7"
+            android:alpha="0.3"
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -14,7 +14,7 @@
             android:keyBackground="@drawable/key_background"
             android:keyTextColor="#fff"
             android:background="@color/colorPrimaryDark"
-            android:popupLayout="@layout/keyboardview_popup" >
+            android:popupLayout="@layout/keyboard_popup" >
         </com.blackcj.customkeyboard.BaseKeyboardView>
 
 <!--

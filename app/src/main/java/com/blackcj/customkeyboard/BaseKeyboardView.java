@@ -42,7 +42,7 @@ public class BaseKeyboardView extends LatinKeyboardView
     private int mkvPopupOffsetX;
     private int mkvPopupOffsetY;
     private List<Integer> pointerIndexList; //for keeping track of ACTION_UP, MOTION, and DOWN tuples
-
+    OnKeyboardActionListener popupOnKeyboardActionListener;
 
     //todo: breakpoints in constructors are never called? why???
     public BaseKeyboardView(Context context, AttributeSet attrs) {
@@ -61,7 +61,7 @@ public class BaseKeyboardView extends LatinKeyboardView
     private void init(Context context, AttributeSet attrs)
     {
         /**
-         *  todo: gets keyboard layout from xml file but too hard so just hardcoding for now in popupKeyboard(MotionEvent me)
+         *  todo: gets keyboard layout from xml file but too hard so just hardcoding for now in showPopupKeyboard(MotionEvent me)
          */
         //        TypedArray a = context.obtainStyledAttributes(
         //                attrs, android.R.styleable.KeyboardView, defStyleAttr, defStyleRes);
@@ -137,7 +137,7 @@ public class BaseKeyboardView extends LatinKeyboardView
             if (pointerIndexList.size() == 0)
             {   //assert: only first finger is processed. Others are ignored
                 pointerIndexList.add(me.getActionIndex());
-                popupKeyboard(me);
+                showPopupKeyboard(me);
             }
 
         }
@@ -170,7 +170,7 @@ public class BaseKeyboardView extends LatinKeyboardView
      * determines whether to see key preview for ACTION_MOVEs. T
      * @param me
      */
-    private void popupKeyboard(MotionEvent me)
+    private void showPopupKeyboard(MotionEvent me)
     {
 
         int[] keyIndexes;
@@ -188,124 +188,125 @@ public class BaseKeyboardView extends LatinKeyboardView
             layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             if (layoutInflater != null)
             {
-                vKeyboardViewLayout = layoutInflater.inflate(R.layout.keyboardview_popup, null);
+                vKeyboardViewLayout = layoutInflater.inflate(R.layout.keyboard_popup, null);
             }
 
 
             kvPopup = (PopupKeyboardView) vKeyboardViewLayout.findViewById(R.id.popup_keyboard_view);
-            kvPopup.setOnKeyboardActionListener(new OnKeyboardActionListener()
-                {
-                        List<Integer> mPressedKeys = new ArrayList<Integer>();
-                        Map<Integer, Integer> primaryCodetoKeyIndexMap;
-
-                        /**
-                         * Press key down on keyboard to activate popup
-                         * @param primaryCode
-                         */
-                        @Override
-                        public void onPress(int primaryCode)
-                        {
-                            List<Keyboard.Key> keys = kvPopup.getKeyboard().getKeys();
-                            Keyboard.Key pressedKey;// = keys.get(keys.indexOf(primaryCode));
-                            Integer keyIndex;
-
-                            //build up hashmap of primaryCode-> Keyboard.Key
-                            if (primaryCodetoKeyIndexMap==null)
-                            {
-                                primaryCodetoKeyIndexMap = new HashMap<Integer, Integer>();
-                                for (int i=0; i<keys.size(); i++)
-                                {
-                                    //todo; this needs to fixed to work with multiple keycodes
-                                    primaryCodetoKeyIndexMap.put(keys.get(i).codes[0], i);
-                                }
-                            }
-
-                            //process primaryCode
-                            if (primaryCode != NOT_A_KEY && primaryCode!= KeyEvent.KEYCODE_UNKNOWN)
-                            {           //assert its a valid keycode
-
-                                keyIndex= primaryCodetoKeyIndexMap.get(primaryCode);
-
-                                if (keyIndex!=null && keys.get(keyIndex)!=null)
-                                {
-                                    pressedKey = keys.get( keyIndex);
-                                    pressedKey.pressed= true;       //pressed is not used to determine any behavior currently
-                                    mPressedKeys.add(primaryCode);
-
-                                    /**
-                                     * todo: popup preview here
-                                     */
-                                    kvPopup.showKeyPopup();
-
-                                    //pressedKey.onPressed(); //redundant
-
-                                }
-                            }
-                            return;
-                        }
-
-                        @Override
-                        public void onRelease(int primaryCode)
-                        {       //this method is called TOO OFTEN.
-                            if (primaryCode != NOT_A_KEY)
-                            {
-                                List<Keyboard.Key> keys = kvPopup.getKeyboard().getKeys();
-                                Keyboard.Key releasedKey =keys.get(primaryCodetoKeyIndexMap.get(primaryCode));
-                                //todo: first key press is never turned off? Why??????
-                                releasedKey.pressed = false;
-                                mPressedKeys.remove((Integer)primaryCode);
-                                kvPopup.dismissKeyPopup();
-                                /**
-                                 *todo: close popup preview
-                                 */
-                                //releasedKey.onReleased(false/* false = key released outside of boundary*/);//redundant
-                            }
-                            return;
-                        }
-
-                        @Override
-                        public void onKey(int primaryCode, int[] keyCodes)
-                        {
-
-                        }
-
-                        @Override
-                        public void onText(CharSequence text)
-                        {
-
-                        }
-
-                        @Override
-                        public void swipeLeft()
-                        {
-
-                        }
-
-                        @Override
-                        public void swipeRight()
-                        {
-
-                        }
-
-                        @Override
-                        public void swipeDown()
-                        {
-
-                        }
-
-                        @Override
-                        public void swipeUp()
-                        {
-
-                        }
-                    });
+//            kvPopup.setOnKeyboardActionListener(new OnKeyboardActionListener()
+//                {
+//                        List<Integer> mPressedKeys = new ArrayList<Integer>();
+//                        Map<Integer, Integer> mPrimaryCodetoKeyIndexMap;
+//
+//                        /**
+//                         * Press key down on keyboard to activate popup
+//                         * @param primaryCode
+//                         */
+//                        @Override
+//                        public void onPress(int primaryCode)
+//                        {
+//                            List<Keyboard.Key> keys = kvPopup.getKeyboard().getKeys();
+//                            Keyboard.Key pressedKey;// = keys.get(keys.indexOf(primaryCode));
+//                            Integer keyIndex;
+//
+//                            //build up hashmap of primaryCode-> Keyboard.Key
+//                            if (mPrimaryCodetoKeyIndexMap==null)
+//                            {
+//                                mPrimaryCodetoKeyIndexMap = new HashMap<Integer, Integer>();
+//                                for (int i=0; i<keys.size(); i++)
+//                                {
+//                                    //todo; this needs to fixed to work with multiple keycodes
+//                                    mPrimaryCodetoKeyIndexMap.put(keys.get(i).codes[0], i);
+//                                }
+//                            }
+//
+//                            //process primaryCode
+//                            if (primaryCode != NOT_A_KEY && primaryCode!= KeyEvent.KEYCODE_UNKNOWN)
+//                            {           //assert its a valid keycode
+//
+//                                keyIndex= mPrimaryCodetoKeyIndexMap.get(primaryCode);
+//
+//                                if (keyIndex!=null && keys.get(keyIndex)!=null)
+//                                {
+//                                    pressedKey = keys.get( keyIndex);
+//                                    pressedKey.pressed= true;       //pressed is not used to determine any behavior currently
+//                                    mPressedKeys.add(primaryCode);
+//
+//                                    /**
+//                                     * todo: popup preview here
+//                                     */
+//                                    kvPopup.showKeyPopup();
+//
+//                                    //pressedKey.onPressed(); //redundant
+//
+//                                }
+//                            }
+//                            return;
+//                        }
+//
+//                        @Override
+//                        public void onRelease(int primaryCode)
+//                        {       //this method is called TOO OFTEN.
+//                            if (primaryCode != NOT_A_KEY)
+//                            {
+//                                List<Keyboard.Key> keys = kvPopup.getKeyboard().getKeys();
+//                                Keyboard.Key releasedKey =keys.get(mPrimaryCodetoKeyIndexMap.get(primaryCode));
+//                                //todo: first key press is never turned off? Why??????
+//                                releasedKey.pressed = false;
+//                                mPressedKeys.remove((Integer)primaryCode);
+//                                kvPopup.dismissKeyPopup();
+//                                /**
+//                                 *todo: close popup preview
+//                                 */
+//                                //releasedKey.onReleased(false/* false = key released outside of boundary*/);//redundant
+//                            }
+//                            return;
+//                        }
+//
+//                        @Override
+//                        public void onKey(int primaryCode, int[] keyCodes)
+//                        {
+//
+//                        }
+//
+//                        @Override
+//                        public void onText(CharSequence text)
+//                        {
+//
+//                        }
+//
+//                        @Override
+//                        public void swipeLeft()
+//                        {
+//
+//                        }
+//
+//                        @Override
+//                        public void swipeRight()
+//                        {
+//
+//                        }
+//
+//                        @Override
+//                        public void swipeDown()
+//                        {
+//
+//                        }
+//
+//                        @Override
+//                        public void swipeUp()
+//                        {
+//
+//                        }
+//                    });
 
 
             keyboard = new Keyboard(getContext(), R.xml.cdda_keyboard_popup);
             kvPopup.setKeyboard(keyboard);
             kvPopup.setPopupParent(this);       //kvPopup determines coordinates relative to parent
             kvPopup.setPreviewEnabled(true);
-
+            kvPopup.setOnKeyboardActionListener(new PopupOnKeyboardActionListener(kvPopup));
+            
             //TODO: Working BUT NEED get better value than 400!!!!!!
             vKeyboardViewLayout.measure(
                     MeasureSpec.makeMeasureSpec(getKeyboard().getMinWidth()+400, MeasureSpec.AT_MOST),
@@ -403,6 +404,186 @@ public class BaseKeyboardView extends LatinKeyboardView
             invalidateAllKeys();
         }
     }
+
+
+
+
+
+    ////////////////////////////////
+
+    /**
+     * Rename Listener to Controller
+     */
+    private class PopupOnKeyboardActionListener implements OnKeyboardActionListener
+    {
+        List<Integer> mPressedKeys = new ArrayList<Integer>();
+        Map<Integer, Integer> mPrimaryCodetoKeyIndexMap;
+        PopupKeyboardView mPopupKeyboardView;       //memory leak due to keeping View maybe....
+
+        PopupOnKeyboardActionListener(PopupKeyboardView popupKeyboardView)
+        {
+            mPopupKeyboardView= popupKeyboardView;
+            List<Keyboard.Key> keys = mPopupKeyboardView.getKeyboard().getKeys();
+//            if (mPrimaryCodetoKeyIndexMap ==null)
+//            {
+
+            //build up hashmap of primaryCode-> Keyboard.Key
+            mPrimaryCodetoKeyIndexMap = new HashMap<Integer, Integer>();
+            for (int i=0; i<keys.size(); i++)
+            {
+                //todo; this needs to fixed to work with multiple keycodes
+                mPrimaryCodetoKeyIndexMap.put(keys.get(i).codes[0], i);
+            }
+        }
+
+
+        void init()
+        {
+
+        }
+
+
+        /**
+         * Press key down on keyboard to activate popup
+         * @param primaryCode
+         */
+        @Override
+        public void onPress(int primaryCode)
+        {
+            List<Keyboard.Key> keys = mPopupKeyboardView.getKeyboard().getKeys();
+            Keyboard.Key pressedKey;// = keys.get(keys.indexOf(primaryCode));
+            Integer keyIndex;
+
+//            //build up hashmap of primaryCode-> Keyboard.Key
+//            if (mPrimaryCodetoKeyIndexMap==null)
+//            {
+//                mPrimaryCodetoKeyIndexMap = new HashMap<Integer, Integer>();
+//                for (int i=0; i<keys.size(); i++)
+//                {
+//                    //todo; this needs to fixed to work with multiple keycodes
+//                    mPrimaryCodetoKeyIndexMap.put(keys.get(i).codes[0], i);
+//                }
+//            }
+
+            //process primaryCode
+            if (primaryCode != NOT_A_KEY && primaryCode!= KeyEvent.KEYCODE_UNKNOWN)
+            {           //assert its a valid keycode
+
+                keyIndex= mPrimaryCodetoKeyIndexMap.get(primaryCode);
+
+                if (keyIndex!=null && keys.get(keyIndex)!=null)
+                {
+                    pressedKey = keys.get( keyIndex);
+                    pressedKey.pressed= true;       //pressed is not used to determine any behavior currently
+                    mPressedKeys.add(primaryCode);
+
+                    /**
+                     * todo: popup preview here
+                     */
+                    mPopupKeyboardView.showKeyPopup();
+
+                    //pressedKey.onPressed(); //redundant
+
+                }
+            }
+            return;
+        }
+
+        @Override
+        public void onRelease(int primaryCode)
+        {       //this method is called TOO OFTEN.
+            if (primaryCode != NOT_A_KEY)
+            {
+                List<Keyboard.Key> keys = mPopupKeyboardView.getKeyboard().getKeys();
+                Keyboard.Key releasedKey =keys.get(mPrimaryCodetoKeyIndexMap.get(primaryCode));
+                //todo: first key press is never turned off? Why??????
+                releasedKey.pressed = false;
+                mPressedKeys.remove((Integer)primaryCode);
+                mPopupKeyboardView.dismissKeyPopup();
+                /**
+                 *todo: close popup preview
+                 */
+                //releasedKey.onReleased(false/* false = key released outside of boundary*/);//redundant
+            }
+            return;
+        }
+
+        @Override
+        public void onKey(int primaryCode, int[] keyCodes)
+        {
+
+        }
+
+        @Override
+        public void onText(CharSequence text)
+        {
+
+        }
+
+        @Override
+        public void swipeLeft()
+        {
+
+        }
+
+        @Override
+        public void swipeRight()
+        {
+
+        }
+
+        @Override
+        public void swipeDown()
+        {
+
+        }
+
+        @Override
+        public void swipeUp()
+        {
+
+        }
+    }  //END POPUPONKEYBOARDACTIONLISTENER
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -41,7 +41,6 @@ import android.view.textservice.TextInfo;
 import android.view.textservice.TextServicesManager;
 
 import com.blackcj.customkeyboard.views.CandidateView;
-import com.blackcj.customkeyboard.views.TouchInterceptLayout_NOTUSED;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,7 +149,7 @@ public class SoftKeyboardIME extends InputMethodService
      */
     @Override public View onCreateInputView() {
         //tilKeyboardContainer = (TouchInterceptLayout_NOTUSED) getLayoutInflater().inflate(R.layout.fullscreen_touch_area, null);
-        mKeyboardView = (BaseKeyboardView) getLayoutInflater().inflate(R.layout.keyboard_layout, null);
+        mKeyboardView = (BaseKeyboardView) getLayoutInflater().inflate(R.layout.keyboard_base, null);
         //flKeyboardContainer.addKeyboardView((LatinKeyboardViewCdda)mKeyboardView);
 
         /**

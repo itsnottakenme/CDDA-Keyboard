@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -224,6 +225,7 @@ public class PopupKeyboardView extends KeyboardView
         LayoutInflater layoutInflater;
         View layout;
         TextView tv;
+        int x, y; //coords of popup
 
         //note: mCurrentKeyOver should never be null here
         layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -232,17 +234,23 @@ public class PopupKeyboardView extends KeyboardView
             layout= layoutInflater.inflate(R.layout.preview, null);
             tv= (TextView)layout.findViewById(R.id.key_preview_textview);
             tv.setText(mCurrentKeyOver.label);
+            //
+            //tv.measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
+            //
             pwKeyPreview.setContentView(layout);
-            pwKeyPreview.setWidth(layout.getMeasuredWidth()+100);
-            pwKeyPreview.setHeight(layout.getMeasuredHeight()+100);
+//            pwKeyPreview.setWidth(layout.getMeasuredWidth()+100); //todo: programmatically determine
+//            pwKeyPreview.setHeight(layout.getMeasuredHeight()+100);
+
+            pwKeyPreview.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+            pwKeyPreview.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
 
 
             /**
              * todo change y value so he same regardless of key row
              */
-            pwKeyPreview.showAtLocation(vParent, Gravity.NO_GRAVITY,
-                    mCurrentKeyOver.x +mMotionEventOffsetX - (mCurrentKeyOver.width)/2,
-                    0-mCurrentKeyOver.height);
+            x= mCurrentKeyOver.x +mMotionEventOffsetX - (mCurrentKeyOver.width)/2;
+            y= 0-mCurrentKeyOver.height;
+            pwKeyPreview.showAtLocation(vParent, Gravity.NO_GRAVITY, x, y);
 
         }
 
