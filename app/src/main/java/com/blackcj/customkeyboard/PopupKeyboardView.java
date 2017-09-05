@@ -166,37 +166,63 @@ public class PopupKeyboardView extends KeyboardView
 
             /**
              * determine keys to be pressed and released. Multitouch case not handled
-             */
-            if (mlastKeyOver==null && mCurrentKeyOver!=null)
-            {
-                getOnKeyboardActionListener().onPress(mCurrentKeyOver.codes[0]);
-                mlastKeyOver= mCurrentKeyOver;
-            }
-            else if (mlastKeyOver!=null)
-            {
-                if (mCurrentKeyOver==null)
-                {
-                    getOnKeyboardActionListener().onRelease(mlastKeyOver.codes[0]);
-                    mlastKeyOver= mCurrentKeyOver;
+             *
+             * //todo: first press case
+             */ //mlastKeyOver==null && mCurrentKeyOver!=null
 
-                }
-                else    //assert: (mCurrentKeyOver!=null)
-                {       //new key pressed
-                    if (mCurrentKeyOver!=mlastKeyOver)      //assert key has changed
-                    {
-                        getOnKeyboardActionListener().onRelease(mlastKeyOver.codes[0]);
-                        getOnKeyboardActionListener().onPress(mCurrentKeyOver.codes[0]);
-                        mlastKeyOver = mCurrentKeyOver;
-                    }
-                }
-            }
-            else
-            {
+
+
+            if (mlastKeyOver==mCurrentKeyOver)
+            {   // key doesn't change
                 //do nothing
             }
+            else if (mCurrentKeyOver!= null && mlastKeyOver==null )
+            {   //first time key press
+                getOnKeyboardActionListener().onPress(mCurrentKeyOver.codes[0]);
+                mlastKeyOver = mCurrentKeyOver;
+            }
+            else if (mCurrentKeyOver!=null && mlastKeyOver!=null)
+            {  //key is released, new key is pressed
+                getOnKeyboardActionListener().onRelease(mlastKeyOver.codes[0]);
+                getOnKeyboardActionListener().onPress(mCurrentKeyOver.codes[0]);
+                mlastKeyOver = mCurrentKeyOver;
+            }
+            else if (mCurrentKeyOver==null && mlastKeyOver!=null)
+            {   //key is released, no new key pressed
+                getOnKeyboardActionListener().onRelease(mlastKeyOver.codes[0]);
+                mlastKeyOver = mCurrentKeyOver;
+            }
 
 
 
+//            if (mlastKeyOver==null && mCurrentKeyOver!=null)
+//            {   //first key press
+//
+//                getOnKeyboardActionListener().onPress(mCurrentKeyOver.codes[0]);
+//                mlastKeyOver= mCurrentKeyOver;
+//            }
+//            else if (mlastKeyOver!=null)
+//            {
+//                if (mCurrentKeyOver==null)
+//                {
+//                    getOnKeyboardActionListener().onRelease(mlastKeyOver.codes[0]);
+//                    mlastKeyOver= mCurrentKeyOver;
+//
+//                }
+//                else    //assert: (mCurrentKeyOver!=null)
+//                {       //new key pressed
+//                    if (mCurrentKeyOver!=mlastKeyOver)      //assert key has changed
+//                    {
+//                        getOnKeyboardActionListener().onRelease(mlastKeyOver.codes[0]);
+//                        getOnKeyboardActionListener().onPress(mCurrentKeyOver.codes[0]);
+//                        mlastKeyOver = mCurrentKeyOver;
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                //do nothing
+//            }
         }
 
         return true;//meHandled;
