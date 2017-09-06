@@ -136,7 +136,7 @@ public class BaseKeyboardView extends LatinKeyboardView
         {
             if (pointerIndexList.size() == 0)
             {   //assert: only first finger is processed. Others are ignored
-                pointerIndexList.add(me.getActionIndex());
+                pointerIndexList.add(me.getActionIndex());      //Used to ignore secondary keypresses... but if touch kvPopup directly this doesn't handle it???
                 showPopupKeyboard(me);
                 /////////////////////////////////////////////////////
                 //todo: fix Pink key sticking on first press. Also stopped working if slide finger to popup
@@ -207,7 +207,10 @@ public class BaseKeyboardView extends LatinKeyboardView
             //todo: listener added afte me has already been consumed? would be null i think....
             kvPopup.setOnKeyboardActionListener(new PopupOnKeyboardActionListener(kvPopup));
 
-            //TODO: Working BUT NEED get better value than 400!!!!!!
+            //TODO: Currrently adding 400 to make popup keyboard wider
+            // The size should not be bounded by the screen. Changing the 400 seems to be throwing off touch
+            // Working BUT NEED get better value than 400!!!!!!WHy aren't key sizes being shown?
+
             vKeyboardViewLayout.measure(
                     MeasureSpec.makeMeasureSpec(getKeyboard().getMinWidth()+400, MeasureSpec.AT_MOST),
                     MeasureSpec.makeMeasureSpec(getKeyboard().getHeight(), MeasureSpec.AT_MOST));//this may defeat clipping
@@ -356,19 +359,8 @@ public class BaseKeyboardView extends LatinKeyboardView
         public void onPress(int primaryCode)
         {
             List<Keyboard.Key> keys = mPopupKeyboardView.getKeyboard().getKeys();
-            Keyboard.Key pressedKey;// = keys.get(keys.indexOf(primaryCode));
+            Keyboard.Key pressedKey;
             Integer keyIndex;
-
-//            //build up hashmap of primaryCode-> Keyboard.Key
-//            if (mPrimaryCodetoKeyIndexMap==null)
-//            {
-//                mPrimaryCodetoKeyIndexMap = new HashMap<Integer, Integer>();
-//                for (int i=0; i<keys.size(); i++)
-//                {
-//                    //todo; this needs to fixed to work with multiple keycodes
-//                    mPrimaryCodetoKeyIndexMap.put(keys.get(i).codes[0], i);
-//                }
-//            }
 
             //process primaryCode
             if (primaryCode != NOT_A_KEY && primaryCode!= KeyEvent.KEYCODE_UNKNOWN)
@@ -402,10 +394,12 @@ public class BaseKeyboardView extends LatinKeyboardView
         @Override
         public void onRelease(int primaryCode)
         {       //this method is called TOO OFTEN.
+            List<Keyboard.Key> keys;
+            Keyboard.Key releasedKey;
             if (primaryCode != NOT_A_KEY)
             {
-                List<Keyboard.Key> keys = mPopupKeyboardView.getKeyboard().getKeys();
-                Keyboard.Key releasedKey =keys.get(mPrimaryCodetoKeyIndexMap.get(primaryCode));
+                keys = mPopupKeyboardView.getKeyboard().getKeys();
+                releasedKey =keys.get(mPrimaryCodetoKeyIndexMap.get(primaryCode));
                 //todo: first key press is never turned off? Why??????
                 releasedKey.pressed = false;
                 mPressedKeys.remove((Integer)primaryCode);

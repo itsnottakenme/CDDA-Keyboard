@@ -154,13 +154,12 @@ public class PopupKeyboardView extends KeyboardView
             //todo
             transX = me.getRawX() - mMotionEventOffsetX-getPaddingLeft();
 
-
             /**
              *            coordinates are relative to BaseKeyboardView
+             *            //todo CandidateView is messing up the positioning of PopupKeyboard
              */
             transY = me.getRawY()-kvPopupCoords[1];//-mMotionEventOffsetY;// -getPaddingBottom();
 
-            //transY = me.getY();//me.getRawY() + mMotionEventOffsetY - kvPopupCoords[1]-getPaddingBottom();
             mCurrentKeyOver= Util.getKeyAtCoordifExists((int) transX, (int) transY, getKeyboard());
 
 
@@ -195,34 +194,6 @@ public class PopupKeyboardView extends KeyboardView
 
 
 
-//            if (mlastKeyOver==null && mCurrentKeyOver!=null)
-//            {   //first key press
-//
-//                getOnKeyboardActionListener().onPress(mCurrentKeyOver.codes[0]);
-//                mlastKeyOver= mCurrentKeyOver;
-//            }
-//            else if (mlastKeyOver!=null)
-//            {
-//                if (mCurrentKeyOver==null)
-//                {
-//                    getOnKeyboardActionListener().onRelease(mlastKeyOver.codes[0]);
-//                    mlastKeyOver= mCurrentKeyOver;
-//
-//                }
-//                else    //assert: (mCurrentKeyOver!=null)
-//                {       //new key pressed
-//                    if (mCurrentKeyOver!=mlastKeyOver)      //assert key has changed
-//                    {
-//                        getOnKeyboardActionListener().onRelease(mlastKeyOver.codes[0]);
-//                        getOnKeyboardActionListener().onPress(mCurrentKeyOver.codes[0]);
-//                        mlastKeyOver = mCurrentKeyOver;
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                //do nothing
-//            }
         }
 
         return true;//meHandled;

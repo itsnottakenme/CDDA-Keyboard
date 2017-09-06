@@ -152,7 +152,7 @@ public class CandidateView extends View {
 //        setMeasuredDimension(measuredWidth,
 //                resolveSize(desiredHeight, heightMeasureSpec));
         setMeasuredDimension(measuredWidth,
-                resolveSize(desiredHeight+200, heightMeasureSpec));  //MY CHANGFE
+                resolveSize(desiredHeight+200, heightMeasureSpec));  //todo: MY CHANGE so that can have popups above keyboard
     }
 
     /**
