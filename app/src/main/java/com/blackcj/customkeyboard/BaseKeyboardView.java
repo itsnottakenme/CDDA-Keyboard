@@ -202,7 +202,7 @@ public class BaseKeyboardView extends LatinKeyboardView
             keyboard = new Keyboard(getContext(), R.xml.cdda_keyboard_popup);
             kvPopup.setKeyboard(keyboard);
             kvPopup.setPopupParent(this);       //kvPopup determines coordinates relative to parent
-            kvPopup.setPreviewEnabled(true);
+            kvPopup.setPreviewEnabled(false);       //don't forget that previews turned off for kvpopup!
 
             //todo: listener added afte me has already been consumed? would be null i think....
             kvPopup.setOnKeyboardActionListener(new PopupOnKeyboardActionListener(kvPopup));
