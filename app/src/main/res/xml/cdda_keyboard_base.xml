@@ -26,7 +26,7 @@
 
     <Row>
         <Key android:codes="97" android:keyLabel="a" android:keyEdgeFlags="left" />
-        <Key android:codes="98" android:keyLabel="b" android:popupCharacters="2"/>
+        <Key android:codes="98" android:keyLabel="b" />
         <Key android:codes="99" android:keyLabel="c" />
         <Key android:codes="100" android:keyLabel="d"/>
         <Key android:codes="101" android:keyLabel="e" />

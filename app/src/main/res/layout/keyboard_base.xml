@@ -6,18 +6,24 @@
             android:id="@+id/base_keyboard_view"
             android:layout_alignParentBottom="true"
             android:paddingTop="0dp"
-            android:alpha="0.3"
+            android:alpha="0.4"
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:keyPreviewLayout="@layout/preview"
-            android:keyBackground="@drawable/key_background"
+            android:background="#00000000"
+            android:keyBackground="@drawable/base_key_background"
+
             android:keyTextColor="#fff"
-            android:background="@color/colorPrimaryDark"
+
             android:popupLayout="@layout/keyboard_popup" >
         </com.blackcj.customkeyboard.BaseKeyboardView>
 
 <!--
+
+android:background="@color/colorPrimaryDark"
+
+
 I don't know if the view can resize with
 android:paddingLeft="10dp"
 android:paddingRight="10dp"

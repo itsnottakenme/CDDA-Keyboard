@@ -245,7 +245,8 @@ public class PopupKeyboardView extends KeyboardView
             /**
              * todo change y value so he same regardless of key row
              */
-            x= mCurrentKeyOver.x +mMotionEventOffsetX - (mCurrentKeyOver.width)/2;
+
+            x= mCurrentKeyOver.x +mMotionEventOffsetX /*- (mCurrentKeyOver.width)/2*/;
             y= 0-mCurrentKeyOver.height;
             pwKeyPreview.showAtLocation(vParent, Gravity.NO_GRAVITY, x, y);
 

@@ -68,7 +68,7 @@ public class SoftKeyboardIME extends InputMethodService
 
     private InputMethodManager mInputMethodManager;
 
-    private LatinKeyboardView mKeyboardView;
+    private BaseKeyboardView mKeyboardView;
     private CandidateView mCandidateView;
     private CompletionInfo[] mCompletions;
     
@@ -191,6 +191,7 @@ public class SoftKeyboardIME extends InputMethodService
     @Override public View onCreateCandidatesView() {
         mCandidateView = new CandidateView(this);
         mCandidateView.setService(this);
+        mKeyboardView.setCandidateView(mCandidateView);     //todo: is this done at right time?
         return mCandidateView;
     }
 

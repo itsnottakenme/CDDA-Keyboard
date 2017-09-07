@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import com.blackcj.customkeyboard.views.CandidateView;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,12 +39,13 @@ public class BaseKeyboardView extends LatinKeyboardView
 
     //These variables are all for pwKeyboardContainer management
     private PopupWindow pwKeyboardContainer;
-    private View vKeyboardViewLayout;
+    private View vPopupKeyboardViewLayout;
     private PopupKeyboardView kvPopup;
     private int mkvPopupOffsetX;
     private int mkvPopupOffsetY;
     private List<Integer> pointerIndexList; //for keeping track of ACTION_UP, MOTION, and DOWN tuples
-    OnKeyboardActionListener popupOnKeyboardActionListener;
+    //OnKeyboardActionListener popupOnKeyboardActionListener;
+    CandidateView mCandidateView;  //only used for mCandidateView.getHeight()
 
     //todo: breakpoints in constructors are never called? why???
     public BaseKeyboardView(Context context, AttributeSet attrs) {
@@ -192,32 +195,35 @@ public class BaseKeyboardView extends LatinKeyboardView
             layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             if (layoutInflater != null)
             {
-                vKeyboardViewLayout = layoutInflater.inflate(R.layout.keyboard_popup, null);
+                vPopupKeyboardViewLayout = layoutInflater.inflate(R.layout.keyboard_popup, null);
             }
 
 
-            kvPopup = (PopupKeyboardView) vKeyboardViewLayout.findViewById(R.id.popup_keyboard_view);
+            kvPopup = (PopupKeyboardView) vPopupKeyboardViewLayout.findViewById(R.id.popup_keyboard_view);
 
 
             keyboard = new Keyboard(getContext(), R.xml.cdda_keyboard_popup);
             kvPopup.setKeyboard(keyboard);
             kvPopup.setPopupParent(this);       //kvPopup determines coordinates relative to parent
             kvPopup.setPreviewEnabled(false);       //don't forget that previews turned off for kvpopup!
-
-            //todo: listener added afte me has already been consumed? would be null i think....
             kvPopup.setOnKeyboardActionListener(new PopupOnKeyboardActionListener(kvPopup));
 
             //TODO: Currrently adding 400 to make popup keyboard wider
             // The size should not be bounded by the screen. Changing the 400 seems to be throwing off touch
             // Working BUT NEED get better value than 400!!!!!!WHy aren't key sizes being shown?
 
-            vKeyboardViewLayout.measure(
-                    MeasureSpec.makeMeasureSpec(getKeyboard().getMinWidth()+400, MeasureSpec.AT_MOST),
-                    MeasureSpec.makeMeasureSpec(getKeyboard().getHeight(), MeasureSpec.AT_MOST));//this may defeat clipping
+            //todo: use PopupKeyboard's measurements, nnot that of the base keyboard. Dummy!!
+//            vPopupKeyboardViewLayout.measure(
+//                    MeasureSpec.makeMeasureSpec(getKeyboard().getMinWidth()+400, MeasureSpec.AT_MOST),
+//                    MeasureSpec.makeMeasureSpec(getKeyboard().getHeight(), MeasureSpec.AT_MOST));//this may defeat clipping
+            vPopupKeyboardViewLayout.measure(
+                    MeasureSpec.makeMeasureSpec(kvPopup.getKeyboard().getMinWidth(), MeasureSpec.AT_MOST),
+                    MeasureSpec.makeMeasureSpec(kvPopup.getKeyboard().getHeight(), MeasureSpec.AT_MOST));//this may defeat clipping
 
-            pwKeyboardContainer.setContentView(vKeyboardViewLayout);
-            pwKeyboardContainer.setWidth(vKeyboardViewLayout.getMeasuredWidth());
-            pwKeyboardContainer.setHeight(vKeyboardViewLayout.getMeasuredHeight());
+
+            pwKeyboardContainer.setContentView(vPopupKeyboardViewLayout);
+            pwKeyboardContainer.setWidth(vPopupKeyboardViewLayout.getMeasuredWidth());
+            pwKeyboardContainer.setHeight(vPopupKeyboardViewLayout.getMeasuredHeight());
 
 
 
@@ -235,7 +241,8 @@ public class BaseKeyboardView extends LatinKeyboardView
              */
 
             //todo: fudged code *(.7) factor
-            mkvPopupOffsetY=(int) ((float)0+(float)vKeyboardViewLayout.getMeasuredHeight() -.7*(float)getHeight());//getheig 50;  //figure out how to match               //getHeight();  //50 ;                                   //todo:make this a multiple of key height.its influenced by CandidateView
+            //mkvPopupOffsetY=(int) ((float)0+(float)vPopupKeyboardViewLayout.getMeasuredHeight() -.7*(float)getHeight());//getheig 50;  //figure out how to match               //getHeight();  //50 ;                                   //todo:make this a multiple of key height.its influenced by CandidateView
+            mkvPopupOffsetY= mCandidateView.getHeight()+ getHeight() - pwKeyboardContainer.getHeight();
             kvPopup.setMotionEventsOffset(mkvPopupOffsetX, mkvPopupOffsetY);
             //////////////////////////////////////////////////////////////////
             pwKeyboardContainer.showAtLocation( this, Gravity.NO_GRAVITY, mkvPopupOffsetX, mkvPopupOffsetY);
@@ -311,6 +318,17 @@ public class BaseKeyboardView extends LatinKeyboardView
             kvPopup.resetKeyHistory();
             invalidateAllKeys();
         }
+    }
+
+
+    /**
+     * Only used to get height for popup placement
+     * @param cv
+     */
+    public void setCandidateView( CandidateView cv)
+    {
+        mCandidateView= cv;
+        return;
     }
 
 
