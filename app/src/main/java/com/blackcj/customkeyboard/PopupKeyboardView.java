@@ -31,6 +31,7 @@ public class PopupKeyboardView extends KeyboardView
                 mMotionEventOffsetY;
 
 
+    int screenWidth;
 
 
     private Keyboard.Key    mlastKeyOver,       //for determining when pointer moves from key to key
@@ -248,6 +249,20 @@ public class PopupKeyboardView extends KeyboardView
 
             x= mCurrentKeyOver.x +mMotionEventOffsetX /*- (mCurrentKeyOver.width)/2*/;
             y= 0-mCurrentKeyOver.height;
+
+            //keep popup within bounds of screen
+            if (x<0)
+            {
+                x=0;
+            }
+            else if (x>getContext().getResources().getDisplayMetrics().widthPixels-mCurrentKeyOver.width) // x> screenwidth
+            {       //should use edge key coordinate as opposed to mCurrentKey maybe...???
+                x= getContext().getResources().getDisplayMetrics().widthPixels-mCurrentKeyOver.width;
+            }
+
+
+
+
             pwKeyPreview.showAtLocation(vParent, Gravity.NO_GRAVITY, x, y);
 
         }

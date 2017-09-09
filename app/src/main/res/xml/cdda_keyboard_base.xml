@@ -38,7 +38,7 @@
         <Key android:codes="107" android:keyLabel="k"/>
         <Key android:codes="108" android:keyLabel="l" />    -->
         <Key android:codes="109" android:keyLabel="m"/>
-    <!--        <Key android:codes="110" android:keyLabel="n"/>     -->
+          <Key android:codes="110" android:keyLabel="n"/>
         <Key android:codes="111" android:keyLabel="o"/>
         <Key android:codes="112" android:keyLabel="p" />
         <Key android:codes="113" android:keyLabel="q" />
@@ -48,8 +48,8 @@
         <Key android:codes="117" android:keyLabel="u"/>
         <Key android:codes="118" android:keyLabel="v"/>
         <Key android:codes="119" android:keyLabel="w" />
-        <Key android:codes="120" android:keyLabel="x"/>     <!--
-        <Key android:codes="121" android:keyLabel="y"/>
+        <Key android:codes="120" android:keyLabel="x"/>
+        <Key android:codes="121" android:keyLabel="y"/>  <!--
         <Key android:codes="122" android:keyLabel="z"/>     -->
 
         <!--todo: make numbers superscripts on symbol keys

@@ -162,9 +162,9 @@ public class BaseKeyboardView extends LatinKeyboardView
             kvPopup.onTouchEvent(me); //ie. popupKeyPreview(me);
 
         }
-        else //todo: what to do with ACTION_CANCEL and others??
+        else //for ACTION_CANCEL and maybe others?
         {
-
+            dismissPopupKeyboard();     //for some reason makes key popups always work...
         }
 
 
@@ -396,7 +396,6 @@ public class BaseKeyboardView extends LatinKeyboardView
                      * todo: popup preview here
                      */
                     mPopupKeyboardView.showKeyPopup();
-
                     //pressedKey.onPressed(); //redundant
 
                 }
